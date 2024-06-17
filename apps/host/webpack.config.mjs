@@ -1,10 +1,11 @@
-import { createRequire } from 'node:module';
+import {createRequire} from 'node:module';
 import path from 'node:path';
 import TerserPlugin from 'terser-webpack-plugin';
 import * as Repack from '@callstack/repack';
+import {getSharedDependencies} from '../../shared/dependencies.js';
 
 const dirname = Repack.getDirname(import.meta.url);
-const { resolve } = createRequire(import.meta.url);
+const {resolve} = createRequire(import.meta.url);
 
 /**
  * More documentation, installation, usage, motivation and differences with Metro is available at:
@@ -21,7 +22,7 @@ const { resolve } = createRequire(import.meta.url);
  * @param env Environment options passed from either Webpack CLI or React Native CLI
  *            when running with `react-native start/bundle`.
  */
-export default (env) => {
+export default env => {
   const {
     mode = 'development',
     context = dirname,
@@ -112,7 +113,7 @@ export default (env) => {
       path: path.join(dirname, 'build/generated', platform),
       filename: 'index.bundle',
       chunkFilename: '[name].chunk.bundle',
-      publicPath: Repack.getPublicPath({ platform, devServer }),
+      publicPath: Repack.getPublicPath({platform, devServer}),
     },
     /**
      * Configures optimization of the built bundle.
@@ -232,6 +233,10 @@ export default (env) => {
           sourceMapFilename,
           assetsPath,
         },
+      }),
+      new Repack.plugins.ModuleFederationPlugin({
+        name: 'host',
+        shared: getSharedDependencies({eager: true}),
       }),
     ],
   };
