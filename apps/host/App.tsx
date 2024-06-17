@@ -1,5 +1,3 @@
-'use strict';
-
 import {Federated} from '@callstack/repack/client';
 import React, {Suspense} from 'react';
 import {ErrorBoundary} from 'react-error-boundary';
