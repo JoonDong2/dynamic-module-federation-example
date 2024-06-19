@@ -3,6 +3,7 @@ import path from 'node:path';
 import TerserPlugin from 'terser-webpack-plugin';
 import * as Repack from '@callstack/repack';
 import {getSharedDependencies} from '../../shared/dependencies.js';
+import ReactDynamicModuleFederationPlugin from 'react-native-dynamic-module-federation/plugin';
 
 const dirname = Repack.getDirname(import.meta.url);
 const {resolve} = createRequire(import.meta.url);

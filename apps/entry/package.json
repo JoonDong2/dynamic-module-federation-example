@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "android": "react-native run-android",
+    "bundle:android": "react-native webpack-bundle --platform android --entry-file index.js --dev true",
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start --port=9000",
@@ -11,6 +12,7 @@
   },
   "dependencies": {
     "react": "18.2.0",
+    "react-native-dynamic-module-federation": "file:../../shared/modules/react-native-dynamic-module-federation",
     "react-error-boundary": "^4.0.13",
     "react-native": "0.74.2",
     "react-native-config": "^1.5.1"

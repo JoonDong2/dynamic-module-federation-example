@@ -1,4 +1,5 @@
 {
   "react": "18.2.0",
-  "react-native": "0.74.2"
+  "react-native": "0.74.2",
+  "react-native-dynamic-module-federation": "0.0.1"
 }
