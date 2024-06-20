@@ -75,3 +75,7 @@ yarn-error.log
 
 .env
 .vscode
+
+# containers-server
+containers-server/deployments
+containers-server/uploads
