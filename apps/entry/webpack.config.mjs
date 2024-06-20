@@ -243,6 +243,7 @@ export default env => {
           './Entry': './src/Entry',
         },
       }),
+      new ReactDynamicModuleFederationPlugin(),
     ],
   };
 };
