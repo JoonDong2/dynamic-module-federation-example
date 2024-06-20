@@ -1,5 +1,4 @@
-export const handleError = (fn, options = {}) => {
-  const { code = 500, catch: _catch, finally: _finally } = options;
+export const handleError = (fn, code = 500) => {
   return async (req, res, next) => {
     try {
       const maybePromise = fn(req, res, next);
@@ -7,14 +6,7 @@ export const handleError = (fn, options = {}) => {
         await maybePromise;
       }
     } catch (e) {
-      if (typeof _catch === "function") {
-        _catch();
-      }
       res.status(code).json({ error: e.message });
-    } finally {
-      if (typeof _finally === "function") {
-        _finally();
-      }
     }
   };
 };
