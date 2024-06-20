@@ -11,7 +11,14 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["**/*.tsx", "**/*.ts", "@types", "index.ts"],
+  "include": [
+    "**/*.tsx",
+    "**/*.ts",
+    "@types",
+    "index.ts",
+    "src/ReactDynamicModuleFederationPlugin.js",
+    "src/ContainerEntryDependency.js"
+  ],
   "exclude": [
     "node_modules",
     "build",

@@ -3,13 +3,21 @@ import React, {
   useContext,
   useEffect,
   useMemo,
-  useState,
+  useRef,
   type PropsWithChildren,
 } from "react";
-
 export interface Containers {
   [name: string]: string; // name: version
 }
+
+declare global {
+  var disposeContainer:
+    | undefined
+    | {
+        [containerName: string]: undefined | (() => void);
+      };
+}
+
 interface ContextProps {
   containers: Containers;
 }
@@ -18,51 +26,50 @@ const Context: React.Context<ContextProps> = React.createContext({
   containers: {},
 });
 
-const isSameContainers = (a: Containers, b: Containers) => {
-  if (a === b) {
-    return true;
-  }
+const getSymetricDifference = (a: Containers, b: Containers) => {
+  const result = new Set<string>();
 
-  if (Object.keys(a).length !== Object.keys(b).length) {
-    return false;
-  }
-
-  const entries = Object.entries(b);
-
-  for (let i = 0; i < entries.length; i++) {
-    const [containerName, version] = entries[i] as [string, string];
-
-    if (a[containerName] !== version) {
-      return false;
+  Object.entries(a).forEach(([containerName, version]) => {
+    if (b?.[containerName] !== version) {
+      result.add(containerName);
     }
-  }
+  });
 
-  return true;
+  Object.entries(b).forEach(([containerName, version]) => {
+    if (a?.[containerName] !== version) {
+      result.add(containerName);
+    }
+  });
+
+  return [...result];
 };
 
-const ImportModuleProvider = ({
+export const ImportModuleProvider = ({
   children,
   containers: newContainers,
 }: PropsWithChildren<ContextProps>) => {
-  const [containers, setContainers] = useState<Containers>(newContainers);
+  const containers = useRef<Containers>(newContainers);
 
   useEffect(() => {
-    setContainers((prevContainers) => {
-      try {
-        if (isSameContainers(prevContainers, newContainers)) {
-          return prevContainers;
-        }
-        return newContainers;
-      } catch {
-        return prevContainers;
-      }
-    });
+    try {
+      const changedContainers = getSymetricDifference(
+        containers.current,
+        newContainers
+      );
+      changedContainers.forEach((containerName) => {
+        global.disposeContainer?.[containerName]?.();
+      });
+    } catch {}
   }, [newContainers]);
 
-  return <Context.Provider value={{ containers }}>{children}</Context.Provider>;
+  return (
+    <Context.Provider value={{ containers: newContainers }}>
+      {children}
+    </Context.Provider>
+  );
 };
 
-const useImportModule = (containerName: string, moduleName: string) => {
+export const useImportModule = (containerName: string, moduleName: string) => {
   const { containers } = useContext(Context);
 
   const version = containers[containerName];
@@ -75,9 +82,4 @@ const useImportModule = (containerName: string, moduleName: string) => {
   }, [containerName, version]);
 
   return MaybeLazy;
-};
-
-export default {
-  ImportModuleProvider,
-  useImportModule,
 };
