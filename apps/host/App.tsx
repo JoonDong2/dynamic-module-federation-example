@@ -1,17 +1,27 @@
-import {Federated} from '@callstack/repack/client';
 import React, {Suspense} from 'react';
 import {ErrorBoundary} from 'react-error-boundary';
 import {Text} from 'react-native';
+import ContainersProvider from './src/ContainersProvider';
+import {useImportModule} from 'react-native-dynamic-module-federation';
 
-const MainEntry = React.lazy(() => Federated.importModule('entry', './Entry'));
+const A = () => {
+  const Entry = useImportModule('entry', './Entry');
+  return <Entry content="123" />;
+};
+
+const Loading = () => {
+  return <Text>Loading</Text>;
+};
 
 function App() {
   return (
-    <ErrorBoundary fallback={<Text>Error</Text>}>
-      <Suspense fallback={<Text>Loading</Text>}>
-        <MainEntry />
-      </Suspense>
-    </ErrorBoundary>
+    <ContainersProvider>
+      <ErrorBoundary fallback={<Text>Error</Text>}>
+        <Suspense fallback={<Loading />}>
+          <A />
+        </Suspense>
+      </ErrorBoundary>
+    </ContainersProvider>
   );
 }
 

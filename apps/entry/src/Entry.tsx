@@ -13,7 +13,7 @@ const Entry = () => {
         onPress={() => {
           Alert.alert('Entry');
         }}>
-        <Text>Entry</Text>
+        <Text>Entry123</Text>
       </Pressable>
     </View>
   );
