@@ -1,6 +1,7 @@
 {
   "name": "entry",
   "version": "0.0.1",
+  "native_version": "0.0.1",
   "private": true,
   "scripts": {
     "android": "react-native run-android",

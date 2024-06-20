@@ -1,20 +1,23 @@
 {
   "name": "host",
   "version": "0.0.1",
+  "native_version": "0.0.1",
   "private": true,
   "scripts": {
     "android:host:dev": "cp env/.env.host.development .env && ENVFILE=.env react-native run-android",
+    "android:host:staging": "cp env/.env.host.staging .env && ENVFILE=.env react-native run-android",
     "ios:host:dev": "cp env/.env.host.development .env && echo \"env/.env.host.development\" > /tmp/envfile && touch \"node_modules/react-native-config/ios/ReactNativeConfig/BuildDotenvConfig.rb\" && cross-env ENVFILE=env/.env.host.development react-native run-ios",
+    "ios:host:staging": "cp env/.env.host.staging .env && echo \"env/.env.host.staging\" > /tmp/envfile && touch \"node_modules/react-native-config/ios/ReactNativeConfig/BuildDotenvConfig.rb\" && cross-env ENVFILE=env/.env.host.staging react-native run-ios",
     "lint": "eslint .",
     "start": "react-native webpack-start",
     "test": "jest"
   },
   "dependencies": {
     "react": "18.2.0",
-    "react-native-dynamic-module-federation": "file:../../shared/modules/react-native-dynamic-module-federation",
     "react-error-boundary": "^4.0.13",
     "react-native": "0.74.2",
-    "react-native-config": "^1.5.1"
+    "react-native-config": "^1.5.1",
+    "react-native-dynamic-module-federation": "file:../../shared/modules/react-native-dynamic-module-federation"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
