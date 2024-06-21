@@ -16,8 +16,8 @@
       "types": "./dist/index.d.ts"
     },
     "./plugin": {
-      "require": "./src/ReactDynamicModuleFederationPlugin.js",
-      "import": "./src/ReactDynamicModuleFederationPlugin.js"
+      "require": "./src/webpack/ReactDynamicModuleFederationPlugin.js",
+      "import": "./src/webpack/ReactDynamicModuleFederationPlugin.js"
     }
   },
   "scripts": {
