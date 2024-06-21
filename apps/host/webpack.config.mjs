@@ -240,7 +240,6 @@ export default env => {
         name: 'host',
         shared: getSharedDependencies({eager: true}),
       }),
-      new ReactDynamicModuleFederationPlugin(),
     ],
   };
 };
