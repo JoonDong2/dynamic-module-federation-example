@@ -10,7 +10,7 @@ NATIVE_VERSION=$(grep '"native_version"' "$PACKAGE_JSON" | awk -F '"' '{print $4
 
 DEPLOY_URL="localhost:4000/deployment"
 
-SOURCE_DIR="$SCRIPT_DIR/../build/outputs/android/remotes"
+SOURCE_DIR="$SCRIPT_DIR/../build/generated/android"
 
 rm -rf "$SOURCE_DIR"
 
@@ -22,6 +22,8 @@ npm run bundle:android
 ZIP_FILE="archive.android.zip"
 
 cd "$SOURCE_DIR"
+
+echo "$SOURCE_DIR"
 
 # 압축 파일 생성
 zip -r "$ZIP_FILE" ./

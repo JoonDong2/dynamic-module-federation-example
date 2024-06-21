@@ -4,6 +4,7 @@ import TerserPlugin from 'terser-webpack-plugin';
 import * as Repack from '@callstack/repack';
 import {getSharedDependencies} from '../../shared/dependencies.js';
 import ReactDynamicModuleFederationPlugin from 'react-native-dynamic-module-federation/plugin';
+import 'dotenv/config';
 
 const dirname = Repack.getDirname(import.meta.url);
 const {resolve} = createRequire(import.meta.url);
@@ -238,12 +239,12 @@ export default env => {
       }),
       new Repack.plugins.ModuleFederationPlugin({
         name: 'entry',
-        shared: getSharedDependencies({eager: true}),
+        shared: getSharedDependencies({eager: process.env.ROLE === 'host'}),
         exposes: {
           './Entry': './src/Entry',
         },
       }),
-      new ReactDynamicModuleFederationPlugin(),
+      new ReactDynamicModuleFederationPlugin({name: 'entry'}),
     ],
   };
 };
