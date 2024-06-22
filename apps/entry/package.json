@@ -4,19 +4,29 @@
   "native_version": "0.0.1",
   "private": true,
   "scripts": {
-    "android": "react-native run-android",
-    "bundle:android": "cp env/.env.remote.staging .env && react-native webpack-bundle --platform android --entry-file index.js --dev true",
-    "ios": "react-native run-ios",
+    "android:host:dev": "cp env/.env.host.development .env && ENVFILE=.env react-native run-android",
+    "android:host:staging": "cp env/.env.host.staging .env && ENVFILE=.env react-native run-android",
+    "ios:host:dev": "cp env/.env.host.development .env && echo \"env/.env.host.development\" > /tmp/envfile && touch \"node_modules/react-native-config/ios/ReactNativeConfig/BuildDotenvConfig.rb\" && cross-env ENVFILE=env/.env.host.development react-native run-ios",
+    "ios:host:staging": "cp env/.env.host.staging .env && echo \"env/.env.host.staging\" > /tmp/envfile && touch \"node_modules/react-native-config/ios/ReactNativeConfig/BuildDotenvConfig.rb\" && cross-env ENVFILE=env/.env.host.staging react-native run-ios",
+    "bundle:android": "cp env/.env.remote.staging .env && ENVFILE=.env react-native webpack-bundle --platform android --entry-file index.js --dev true",
+    "deploy:android": "sh deployments/staging.android.sh",
     "lint": "eslint .",
     "start": "react-native start --port=9000",
     "test": "jest"
   },
   "dependencies": {
+    "@react-native-masked-view/masked-view": "^0.3.1",
+    "@react-navigation/bottom-tabs": "^6.5.20",
+    "@react-navigation/native": "^6.1.17",
+    "@react-navigation/stack": "^6.3.29",
     "react": "18.2.0",
     "react-error-boundary": "^4.0.13",
     "react-native": "0.74.2",
     "react-native-config": "^1.5.1",
-    "react-native-dynamic-module-federation": "file:../../shared/modules/react-native-dynamic-module-federation"
+    "react-native-dynamic-module-federation": "file:../../shared/modules/react-native-dynamic-module-federation",
+    "react-native-gesture-handler": "^2.17.1",
+    "react-native-safe-area-context": "^4.10.5",
+    "react-native-screens": "^3.32.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
