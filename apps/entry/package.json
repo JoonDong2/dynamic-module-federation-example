@@ -1,7 +1,6 @@
 {
   "name": "entry",
   "version": "0.0.1",
-  "native_version": "0.0.1",
   "private": true,
   "scripts": {
     "android:host:dev": "cp env/.env.host.development .env && ENVFILE=.env react-native run-android",

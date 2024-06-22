@@ -2,19 +2,24 @@
 
 SCRIPT_DIR=$(dirname "$0")
 
+ROOT=$SCRIPT_DIR/../
+
+cp $ROOT/env/.env.host.development .env
+
+export $(grep -E '^(NATIVE_VERSION)=' .env | xargs)
+
 PACKAGE_JSON="${SCRIPT_DIR}/../package.json"
 
 NAME=$(grep '"name"' "$PACKAGE_JSON" | awk -F '"' '{print $4}')
 VERSION=$(grep '"version"' "$PACKAGE_JSON" | awk -F '"' '{print $4}')
-NATIVE_VERSION=$(grep '"native_version"' "$PACKAGE_JSON" | awk -F '"' '{print $4}')
 
 DEPLOY_URL="localhost:4000/deployment"
 
-SOURCE_DIR="$SCRIPT_DIR/../build/generated/android"
+SOURCE_DIR="$ROOT/build/generated/android"
 
 rm -rf "$SOURCE_DIR"
 
-cd "$SCRIPT_DIR/.."
+cd "$ROOT"
 
 npm run bundle:android
 
