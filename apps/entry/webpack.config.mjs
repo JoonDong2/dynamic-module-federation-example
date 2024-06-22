@@ -157,6 +157,7 @@ export default env => {
           include: [
             /node_modules(.*[/\\])+react-native/,
             /node_modules(.*[/\\])+@react-native/,
+            /node_modules(.*[/\\])+react-freeze/,
             /node_modules(.*[/\\])+@react-navigation/,
             /node_modules(.*[/\\])+@react-native-community/,
             /node_modules(.*[/\\])+expo/,
