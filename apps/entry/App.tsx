@@ -6,9 +6,10 @@
  */
 
 import React from 'react';
+import Entry from './src/Entry';
 
 function App() {
-  return null;
+  return <Entry />;
 }
 
 export default App;

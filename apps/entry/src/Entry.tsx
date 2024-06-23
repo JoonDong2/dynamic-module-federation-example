@@ -1,22 +1,8 @@
 import React from 'react';
-import {View, Text, Pressable, Alert} from 'react-native';
+import Stack from './Stack';
 
 const Entry = () => {
-  return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}>
-      <Pressable
-        onPress={() => {
-          Alert.alert('Entry');
-        }}>
-        <Text>Entry</Text>
-      </Pressable>
-    </View>
-  );
+  return <Stack />;
 };
 
 export default Entry;
