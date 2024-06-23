@@ -1,19 +1,22 @@
-import {Platform} from 'react-native';
-import {getLocalhost} from '../../../../shared/localhost';
-import {type Containers} from 'react-native-dynamic-module-federation';
+import { Platform } from 'react-native';
 import Config from 'react-native-config';
-import {getDevContainers} from '../../../../shared/containers.js';
+import { getLocalhost } from './localhost';
+import type { Containers } from 'react-native-dynamic-module-federation';
 
-const CONTAINERS_SERVER_URI = `http://${getLocalhost(
-  Platform.OS,
-)}:4000/containers`;
+export const getDevContainers = () => ({
+  entry: `http://${getLocalhost()}:9000/[name][ext]`,
+  app1: `http://${getLocalhost()}:9001/[name][ext]`,
+  app2: `http://${getLocalhost()}:9002/[name][ext]`,
+});
+
+const CONTAINERS_SERVER_URI = `http://${getLocalhost()}:4000/containers`;
 
 export const fetchContainers = async (): Promise<Containers> => {
   if (Config.ENV === 'development') {
-    return getDevContainers(Platform.OS);
+    return getDevContainers();
   }
 
-  const params = {
+  const params: any = {
     env: Config.ENV,
     os: Platform.OS,
     native_version: Config.NATIVE_VERSION,
@@ -25,9 +28,9 @@ export const fetchContainers = async (): Promise<Containers> => {
     Object.entries(await res.json()).map(([containerName, path]) => {
       return [
         containerName,
-        `http://${getLocalhost(Platform.OS)}:4000/${path}/[name][ext]`,
+        `http://${getLocalhost()}:4000/${path}/[name][ext]`,
       ];
-    }),
+    })
   );
   return containers;
 };

@@ -1,14 +1,8 @@
-import {
-  Federated,
-  Script,
-  ScriptLocatorResolver,
-} from '@callstack/repack/client';
-import {Platform} from 'react-native';
-import {Containers} from 'react-native-dynamic-module-federation';
+import { Federated, Script } from '@callstack/repack/client';
+import { Platform } from 'react-native';
+import { type Containers } from 'react-native-dynamic-module-federation';
 
-export const generateResolver = (
-  containers: Containers,
-): ScriptLocatorResolver => {
+export const generateResolver = (containers: Containers): any => {
   return (scriptId: string, caller?: string) => {
     const resolveURL = Federated.createURLResolver({
       containers,

@@ -1,0 +1,1 @@
+{"version":3,"names":["Platform","getLocalhost","OS"],"sourceRoot":"../../src","sources":["localhost.ts"],"mappings":"AAAA,SAASA,QAAQ,QAAQ,cAAc;AAEvC,OAAO,MAAMC,YAAY,GAAGA,CAAA,KAAM;EAChC,IAAID,QAAQ,CAACE,EAAE,KAAK,SAAS,EAAE;IAC7B,OAAO,UAAU;EACnB;EAEA,OAAO,WAAW;AACpB,CAAC","ignoreList":[]}

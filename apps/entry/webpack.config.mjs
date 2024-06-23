@@ -2,7 +2,7 @@ import {createRequire} from 'node:module';
 import path from 'node:path';
 import TerserPlugin from 'terser-webpack-plugin';
 import * as Repack from '@callstack/repack';
-import {getSharedDependencies} from '../../shared/dependencies.js';
+import {getSharedDependencies} from 'shared/webpack';
 import ReactNativeDynamicModuleFederationPlugin from 'react-native-dynamic-module-federation/plugin';
 import 'dotenv/config';
 

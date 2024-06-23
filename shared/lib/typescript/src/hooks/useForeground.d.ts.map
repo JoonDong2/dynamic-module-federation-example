@@ -1,0 +1,1 @@
+{"version":3,"file":"useForeground.d.ts","sourceRoot":"","sources":["../../../../src/hooks/useForeground.ts"],"names":[],"mappings":"AAIA,UAAU,kBAAkB;IAC1B,IAAI,SAAS,GAAG,IAAI,CAAC;CACtB;AAGD,UAAU,kBAAkB;IAC1B,IACI,IAAI,GACJ,SAAS,GACT,kBAAkB,GAClB,OAAO,CAAC,SAAS,GAAG,kBAAkB,GAAG,IAAI,CAAC,CAAC;CACpD;AAGD,QAAA,MAAM,aAAa,aAAc,kBAAkB,SA0DlD,CAAC;AAEF,eAAe,aAAa,CAAC"}

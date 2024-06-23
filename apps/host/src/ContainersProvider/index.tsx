@@ -5,8 +5,7 @@ import {
 } from 'react-native-dynamic-module-federation';
 import useForeground from '../hooks/useForeground';
 import {ScriptLocatorResolver, ScriptManager} from '@callstack/repack/client';
-import {fetchContainers} from './containers';
-import {generateResolver} from './resolver';
+import {fetchContainers, generateResolver} from 'shared';
 
 const ContainersProvider = ({children}: PropsWithChildren<{}>) => {
   const resolver = useRef<ScriptLocatorResolver>();

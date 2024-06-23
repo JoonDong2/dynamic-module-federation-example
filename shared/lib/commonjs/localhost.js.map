@@ -1,0 +1,1 @@
+{"version":3,"names":["_reactNative","require","getLocalhost","Platform","OS","exports"],"sourceRoot":"../../src","sources":["localhost.ts"],"mappings":";;;;;;AAAA,IAAAA,YAAA,GAAAC,OAAA;AAEO,MAAMC,YAAY,GAAGA,CAAA,KAAM;EAChC,IAAIC,qBAAQ,CAACC,EAAE,KAAK,SAAS,EAAE;IAC7B,OAAO,UAAU;EACnB;EAEA,OAAO,WAAW;AACpB,CAAC;AAACC,OAAA,CAAAH,YAAA,GAAAA,YAAA","ignoreList":[]}
