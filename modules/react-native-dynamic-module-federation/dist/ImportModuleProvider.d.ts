@@ -1,4 +1,5 @@
-import React, { type PropsWithChildren } from "react";
+import React, { PropsWithChildren } from "react";
+export declare const Context: React.Context<ContextProps>;
 export interface Containers {
     [name: string]: string;
 }
@@ -7,9 +8,8 @@ declare global {
         [containerName: string]: undefined | (() => void);
     };
 }
-interface ContextProps {
+export interface ContextProps {
     containers: Containers;
 }
 export declare const ImportModuleProvider: ({ children, containers: newContainers, }: PropsWithChildren<ContextProps>) => import("react/jsx-runtime").JSX.Element;
-export declare const useImportModule: (containerName: string, moduleName: string) => React.LazyExoticComponent<React.ComponentType<any>> | React.FunctionComponent<{}>;
-export {};
+export default ImportModuleProvider;

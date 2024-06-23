@@ -1,12 +1,10 @@
-const Template = require("webpack/lib/Template");
-const RuntimeGlobals = require("webpack/lib/RuntimeGlobals");
 const ContainerEntryDependency = require("webpack/lib/container/ContainerEntryDependency");
 const ContainerExposedDependency = require("webpack/lib/container/ContainerExposedDependency");
-const ReactDynamicModuleFederationModuleFactory = require("./ReactDynamicModuleFederationModuleFactory");
+const ReactNativeDynamicModuleFederationModuleFactory = require("./ReactNativeDynamicModuleFederationModuleFactory");
 
 const PLUGIN_NAME = "ReactDynamicModuleFederationPlugin";
 
-class ReactDynamicModuleFederationPlugin {
+class ReactNativeDynamicModuleFederationPlugin {
   constructor(options) {
     this.options = options;
   }
@@ -27,7 +25,7 @@ class ReactDynamicModuleFederationPlugin {
       (compilation, { normalModuleFactory }) => {
         compilation.dependencyFactories.set(
           ContainerEntryDependency,
-          new ReactDynamicModuleFederationModuleFactory()
+          new ReactNativeDynamicModuleFederationModuleFactory()
         );
         compilation.dependencyFactories.set(
           ContainerExposedDependency,
@@ -38,4 +36,4 @@ class ReactDynamicModuleFederationPlugin {
   }
 }
 
-module.exports = ReactDynamicModuleFederationPlugin;
+module.exports = ReactNativeDynamicModuleFederationPlugin;

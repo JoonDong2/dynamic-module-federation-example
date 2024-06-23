@@ -1,6 +1,8 @@
-import { jsx } from 'react/jsx-runtime';
-import { Federated } from '@callstack/repack/client';
-import React, { useRef, useEffect, useContext, useState } from 'react';
+'use strict';
+
+var jsxRuntime = require('react/jsx-runtime');
+var React = require('react');
+var client = require('@callstack/repack/client');
 
 const Context = React.createContext({
     containers: {},
@@ -20,8 +22,8 @@ const getSymetricDifference = (a, b) => {
     return [...result];
 };
 const ImportModuleProvider = ({ children, containers: newContainers, }) => {
-    const containers = useRef(newContainers);
-    useEffect(() => {
+    const containers = React.useRef(newContainers);
+    React.useEffect(() => {
         try {
             const changedContainers = getSymetricDifference(containers.current, newContainers);
             changedContainers.forEach((containerName) => {
@@ -32,20 +34,21 @@ const ImportModuleProvider = ({ children, containers: newContainers, }) => {
         }
         catch (_a) { }
     }, [newContainers]);
-    return (jsx(Context.Provider, { value: { containers: newContainers }, children: children }));
+    return (jsxRuntime.jsx(Context.Provider, { value: { containers: newContainers }, children: children }));
 };
+
 const Null = () => null;
 const useImportModule = (containerName, moduleName) => {
-    const { containers } = useContext(Context);
+    const { containers } = React.useContext(Context);
     const version = containers[containerName];
-    const prevVersion = useRef(version);
-    const [Lazy, setLazy] = useState();
-    useEffect(() => {
+    const prevVersion = React.useRef(version);
+    const [Lazy, setLazy] = React.useState();
+    React.useEffect(() => {
         setLazy((prev) => {
             if (version) {
                 if (!prev || prevVersion.current !== version) {
                     prevVersion.current = version;
-                    return React.lazy(() => Federated.importModule(containerName, moduleName));
+                    return React.lazy(() => client.Federated.importModule(containerName, moduleName));
                 }
             }
             return prev;
@@ -53,9 +56,10 @@ const useImportModule = (containerName, moduleName) => {
     }, [containerName, version]);
     // 익명 컴포넌트가 아니면 밖에서 컴포넌트 내용이 변경된 것을 인식하지 못한다.
     return (props) => {
-        return Lazy ? jsx(Lazy, Object.assign({}, props)) : jsx(Null, {});
+        return Lazy ? jsxRuntime.jsx(Lazy, Object.assign({}, props)) : jsxRuntime.jsx(Null, {});
     };
 };
 
-export { ImportModuleProvider, useImportModule };
-//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguZXMuanMiLCJzb3VyY2VzIjpbXSwic291cmNlc0NvbnRlbnQiOltdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OyJ9
+exports.ImportModuleProvider = ImportModuleProvider;
+exports.useImportModule = useImportModule;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VzIjpbXSwic291cmNlc0NvbnRlbnQiOltdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OzsifQ==

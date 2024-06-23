@@ -10,7 +10,7 @@ const SOURCE_TYPES = new Set(["javascript"]);
 
 const DISPOSE_CONTAINER_KEY = "disposeContainer";
 
-module.exports = class JoondongModule extends Module {
+module.exports = class ReactNativeDynamicModuleFederationModule extends Module {
   constructor(name) {
     super(JAVASCRIPT_MODULE_TYPE_DYNAMIC, null);
     this.name = name;
