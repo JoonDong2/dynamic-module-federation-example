@@ -1,28 +1,34 @@
-import React, {Suspense} from 'react';
-import {ErrorBoundary} from 'react-error-boundary';
+import {QueryClient} from '@tanstack/react-query';
+import React from 'react';
 import {Text} from 'react-native';
-import ContainersProvider from './src/ContainersProvider';
-import {useImportModule} from 'react-native-dynamic-module-federation';
+import {ImportModuleProvider} from 'react-native-dynamic-module-federation';
+import {
+  useContainers,
+  hocPipe,
+  withQueryClient,
+  withErrorBoundary,
+  withSuspense,
+} from 'shared';
+import Main from './src/Main';
 
-const A = () => {
-  const Entry = useImportModule('entry', './Entry');
-  return <Entry content="123" />;
-};
+const App = () => {
+  const containers = useContainers({suspense: false});
 
-const Loading = () => {
-  return <Text>Loading</Text>;
-};
+  if (!containers) {
+    return null;
+  }
 
-function App() {
   return (
-    <ContainersProvider>
-      <ErrorBoundary fallback={<Text>Error</Text>}>
-        <Suspense fallback={<Loading />}>
-          <A />
-        </Suspense>
-      </ErrorBoundary>
-    </ContainersProvider>
+    <ImportModuleProvider containers={containers}>
+      <Main />
+    </ImportModuleProvider>
   );
-}
+};
 
-export default App;
+const queryClient = new QueryClient();
+
+export default hocPipe([
+  withQueryClient(queryClient),
+  withErrorBoundary(<Text>Containers 오류</Text>),
+  withSuspense(<Text>Containers 로딩중</Text>),
+])(<App />);
