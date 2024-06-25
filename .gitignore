@@ -81,4 +81,4 @@ containers-server/deployments
 containers-server/uploads
 
 #shared
-shared/lib/*
+**/*/lib
