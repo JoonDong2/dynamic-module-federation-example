@@ -14,10 +14,6 @@ import Main from './src/Main';
 const App = () => {
   const containers = useContainers({suspense: false});
 
-  if (!containers) {
-    return null;
-  }
-
   return (
     <ImportModuleProvider containers={containers}>
       <Main />

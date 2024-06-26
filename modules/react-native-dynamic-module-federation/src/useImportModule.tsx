@@ -14,14 +14,14 @@ export function useImportModule<P = any>(
 ): (props: P) => JSX.Element | null {
   const { containers } = useContext(Context);
 
-  const uri = useRef(containers[containerName]);
+  const uri = useRef(containers?.[containerName]);
 
   const [Lazy, setLazy] = useState<(props: any) => JSX.Element>();
 
   useEffect(() => {
     setLazy((prev?: (props: P) => JSX.Element) => {
-      const newUri = containers[containerName];
-      if (uri) {
+      const newUri = containers?.[containerName];
+      if (newUri) {
         if (!prev || uri.current !== newUri) {
           uri.current = newUri;
           // 익명 컴포넌트가 아니면 밖에서 컴포넌트 내용이 변경된 것을 인식하지 못한다.
@@ -34,7 +34,7 @@ export function useImportModule<P = any>(
       }
       return prev;
     });
-  }, [containers, containerName, uri]);
+  }, [containers, containerName]);
 
   return Lazy ?? Null;
 }

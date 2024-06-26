@@ -1,8 +1,15 @@
 import React, { PropsWithChildren, useEffect, useRef } from "react";
 
-export const Context: React.Context<ContextProps> = React.createContext({
+export interface ContextProps {
+  containers?: Containers;
+}
+
+const initialContext: ContextProps = {
   containers: {},
-});
+};
+
+export const Context: React.Context<ContextProps> =
+  React.createContext(initialContext);
 
 export interface Containers {
   [name: string]: string; // name: version
@@ -16,11 +23,7 @@ declare global {
       };
 }
 
-export interface ContextProps {
-  containers: Containers;
-}
-
-const getSymetricDifference = (a: Containers, b: Containers) => {
+const getSymetricDifference = (a: Containers = {}, b: Containers = {}) => {
   const result = new Set<string>();
 
   Object.entries(a).forEach(([containerName, version]) => {
@@ -42,9 +45,10 @@ export const ImportModuleProvider = ({
   children,
   containers: newContainers,
 }: PropsWithChildren<ContextProps>) => {
-  const containers = useRef<Containers>(newContainers);
+  const containers = useRef<Containers | undefined>(newContainers);
 
   useEffect(() => {
+    if (!newContainers) return;
     try {
       const changedContainers = getSymetricDifference(
         containers.current,
