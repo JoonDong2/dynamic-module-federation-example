@@ -175,7 +175,7 @@
   },
   "dependencies": {
     "@callstack/repack": "^4.1.1",
-    "@tanstack/react-query": "*",
+    "@tanstack/react-query": "^4.36.1",
     "react-error-boundary": "*",
     "react-native-config": "*",
     "react-native-dynamic-module-federation": "file:../modules/react-native-dynamic-module-federation"
