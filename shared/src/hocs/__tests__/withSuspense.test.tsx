@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react-native';
+import { render, waitFor } from '@testing-library/react-native';
 import { Text } from 'react-native';
 import withSuspense from '../withSuspense';
 
@@ -8,6 +8,6 @@ const TestComponent = () => {
 };
 
 it('fallback 랜더링', async () => {
-  render(withSuspense(<Text>로딩중</Text>)(<TestComponent />));
+  const screen = render(withSuspense(<Text>로딩중</Text>)(<TestComponent />));
   await waitFor(() => screen.findByText('로딩중'));
 });
