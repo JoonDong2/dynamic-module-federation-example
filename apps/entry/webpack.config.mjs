@@ -2,7 +2,7 @@ import {createRequire} from 'node:module';
 import path from 'node:path';
 import TerserPlugin from 'terser-webpack-plugin';
 import * as Repack from '@callstack/repack';
-import {getSharedDependencies} from 'shared/webpack';
+import {getSharedDependencies, babelTargets} from 'shared/webpack';
 import ReactNativeDynamicModuleFederationPlugin from 'react-native-dynamic-module-federation/plugin';
 import 'dotenv/config';
 
@@ -154,19 +154,7 @@ export default env => {
       rules: [
         {
           test: /\.[cm]?[jt]sx?$/,
-          include: [
-            /node_modules(.*[/\\])+react-native/,
-            /node_modules(.*[/\\])+@react-native/,
-            /node_modules(.*[/\\])+react-freeze/,
-            /node_modules(.*[/\\])+@react-navigation/,
-            /node_modules(.*[/\\])+@react-native-community/,
-            /node_modules(.*[/\\])+expo/,
-            /node_modules(.*[/\\])+pretty-format/,
-            /node_modules(.*[/\\])+metro/,
-            /node_modules(.*[/\\])+abort-controller/,
-            /node_modules(.*[/\\])+@callstack[/\\]repack/,
-            /node_modules(.*[/\\])+react-error-boundary/,
-          ],
+          include: babelTargets,
           use: 'babel-loader',
         },
         /**
