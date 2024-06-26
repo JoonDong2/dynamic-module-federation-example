@@ -18,13 +18,11 @@ const Stack = () => {
   }, []);
 
   return (
-    <NavigationContainer>
-      <StackNavigator.Navigator>
-        <StackNavigator.Screen name="Tab" component={Tab} />
-        {test && <StackNavigator.Screen name="ScreenC" component={ScreenC} />}
-        <StackNavigator.Screen name="ScreenD" component={ScreenD} />
-      </StackNavigator.Navigator>
-    </NavigationContainer>
+    <StackNavigator.Navigator>
+      <StackNavigator.Screen name="Tab" component={Tab} />
+      {test && <StackNavigator.Screen name="ScreenC" component={ScreenC} />}
+      <StackNavigator.Screen name="ScreenD" component={ScreenD} />
+    </StackNavigator.Navigator>
   );
 };
 
