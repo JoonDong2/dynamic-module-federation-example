@@ -5,7 +5,7 @@ import {ImportModuleProvider} from 'react-native-dynamic-module-federation';
 import {
   useContainers,
   hocPipe,
-  withQueryClient,
+  withReactQuery,
   withErrorBoundary,
   withSuspense,
   withReactNavigation,
@@ -26,7 +26,7 @@ const queryClient = new QueryClient();
 
 export default hocPipe([
   withReactNavigation(),
-  withQueryClient(queryClient),
+  withReactQuery(queryClient),
   withErrorBoundary(<Text>Containers 오류</Text>),
   withSuspense(<Text>Containers 로딩중</Text>),
 ])(<App />);

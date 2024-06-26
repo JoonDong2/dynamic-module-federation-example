@@ -4,7 +4,7 @@ import {
   hocPipe,
   useContainers,
   withErrorBoundary,
-  withQueryClient,
+  withReactQuery,
   withReactNavigation,
   withSuspense,
 } from 'shared';
@@ -26,7 +26,7 @@ const queryClient = new QueryClient();
 
 export default hocPipe([
   withReactNavigation(),
-  withQueryClient(queryClient),
+  withReactQuery(queryClient),
   withErrorBoundary(<Text>Containers 오류</Text>),
   withSuspense(<Text>Containers 로딩중</Text>),
 ])(<App />);
