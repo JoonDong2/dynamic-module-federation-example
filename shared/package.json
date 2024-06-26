@@ -94,7 +94,8 @@
     "react": "*",
     "react-error-boundary": "*",
     "react-native": "*",
-    "react-native-config": "*"
+    "react-native-config": "*",
+    "@react-navigation/native": "*"
   },
   "workspaces": [
     "example"
@@ -175,7 +176,8 @@
   },
   "dependencies": {
     "@callstack/repack": "^4.1.1",
-    "@tanstack/react-query": "^4.36.1",
+    "@react-navigation/native": "^6.1.17",
+    "@tanstack/react-query": "*",
     "react-error-boundary": "*",
     "react-native-config": "*",
     "react-native-dynamic-module-federation": "file:../modules/react-native-dynamic-module-federation"
