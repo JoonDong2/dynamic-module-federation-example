@@ -164,6 +164,8 @@ export default env => {
             /node_modules(.*[/\\])+abort-controller/,
             /node_modules(.*[/\\])+@callstack[/\\]repack/,
             /node_modules(.*[/\\])+react-error-boundary/,
+            /node_modules(.*[/\\])+@tanstack[/\\]query-core/,
+            /node_modules(.*[/\\])+@tanstack[/\\]react-query/,
           ],
           use: 'babel-loader',
         },
