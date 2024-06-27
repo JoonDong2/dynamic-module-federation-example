@@ -1,14 +1,16 @@
-const Module = require("webpack/lib/Module");
-const RuntimeGlobals = require("webpack/lib/RuntimeGlobals");
+const Module = require('webpack/lib/Module');
+const RuntimeGlobals = require('webpack/lib/RuntimeGlobals');
 const {
   JAVASCRIPT_MODULE_TYPE_DYNAMIC,
-} = require("webpack/lib/ModuleTypeConstants");
-const { RawSource } = require("webpack-sources");
-const Template = require("webpack/lib/Template");
+} = require('webpack/lib/ModuleTypeConstants');
+const { RawSource } = require('webpack-sources');
+const Template = require('webpack/lib/Template');
 
-const SOURCE_TYPES = new Set(["javascript"]);
+const RuntimeModule = require('webpack/lib/RuntimeModule');
 
-const DISPOSE_CONTAINER_KEY = "disposeContainer";
+const SOURCE_TYPES = new Set(['javascript']);
+
+const DISPOSE_CONTAINER_KEY = 'disposeContainer';
 
 module.exports = class ReactNativeDynamicModuleFederationModule extends Module {
   constructor(name) {
@@ -29,7 +31,7 @@ module.exports = class ReactNativeDynamicModuleFederationModule extends Module {
   }
 
   libIdent(options) {
-    return `${this.layer ? `(${this.layer})/` : ""}webpack/container/entry/${
+    return `${this.layer ? `(${this.layer})/` : ''}webpack/container/entry/${
       this.name
     }`;
   }
@@ -44,7 +46,7 @@ module.exports = class ReactNativeDynamicModuleFederationModule extends Module {
       strict: true,
     };
 
-    this.buildMeta.exportsType = "namespace";
+    this.buildMeta.exportsType = 'namespace';
 
     callback();
   }
@@ -63,21 +65,21 @@ module.exports = class ReactNativeDynamicModuleFederationModule extends Module {
       Template.indent([
         `${RuntimeGlobals.global}["${DISPOSE_CONTAINER_KEY}"] = {}`,
       ]),
-      "}",
+      '}',
       `${RuntimeGlobals.global}.${DISPOSE_CONTAINER_KEY}['${this.name}'] = function() {`,
       Template.indent([
         `var webpackChunkKey = "webpackChunk${this.name}";`,
-        "if (Array.isArray(self[webpackChunkKey]) && self[webpackChunkKey].length > 0) {",
-        Template.indent(["self[webpackChunkKey] = [];"]),
-        "}",
+        'if (Array.isArray(self[webpackChunkKey]) && self[webpackChunkKey].length > 0) {',
+        Template.indent(['self[webpackChunkKey] = [];']),
+        '}',
         `if (${RuntimeGlobals.hasOwnProperty}(${RuntimeGlobals.global}, "${this.name}")) {`,
         Template.indent([`delete ${RuntimeGlobals.global}.${this.name};`]),
-        `}`,
+        '}',
       ]),
-      "}\n",
+      '}\n',
     ]);
 
-    sources.set("javascript", new RawSource(source));
+    sources.set('javascript', new RawSource(source));
 
     return {
       sources,

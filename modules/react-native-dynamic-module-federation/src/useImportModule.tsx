@@ -1,6 +1,6 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
-import { Federated } from "@callstack/repack/client";
-import { Context } from "./ImportModuleProvider";
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { Federated } from '@callstack/repack/client';
+import { Context } from './ImportModuleProvider';
 
 export interface Containers {
   [name: string]: string; // name: uri
