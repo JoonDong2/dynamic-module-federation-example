@@ -179,7 +179,6 @@
     "@react-navigation/native": "^6.1.17",
     "@tanstack/react-query": "*",
     "react-error-boundary": "*",
-    "react-native-config": "*",
-    "react-native-dynamic-module-federation": "file:../modules/react-native-dynamic-module-federation"
+    "react-native-config": "*"
   }
 }

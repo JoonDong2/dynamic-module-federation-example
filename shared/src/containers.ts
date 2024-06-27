@@ -1,7 +1,6 @@
 import { Platform } from 'react-native';
 import Config from 'react-native-config';
 import { getLocalhost } from './localhost';
-import type { Containers } from 'react-native-dynamic-module-federation';
 
 export const getDevContainers = () => ({
   entry: `http://${getLocalhost()}:9000/[name][ext]`,
@@ -11,7 +10,7 @@ export const getDevContainers = () => ({
 
 const CONTAINERS_SERVER_URI = `http://${getLocalhost()}:4000/containers`;
 
-export const fetchContainers = async (): Promise<Containers> => {
+export const fetchContainers = async (): Promise<any> => {
   if (Config.ENV === 'development') {
     return getDevContainers();
   }

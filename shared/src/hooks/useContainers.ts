@@ -1,4 +1,3 @@
-import type { Containers } from 'react-native-dynamic-module-federation';
 import { fetchContainers } from '../containers';
 import { useQuery } from '@tanstack/react-query';
 import useForeground from './useForeground';
@@ -16,7 +15,7 @@ interface Props {
 const useContainers = ({ suspense }: Props = {}) => {
   const resolver = useRef<ScriptLocatorResolver>();
 
-  const { data, refetch } = useQuery<Containers>({
+  const { data, refetch } = useQuery<any>({
     queryKey: ['fetch-containers'],
     queryFn: async () => {
       const newContainers = await fetchContainers();
