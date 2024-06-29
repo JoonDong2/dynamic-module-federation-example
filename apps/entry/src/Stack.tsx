@@ -1,26 +1,27 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 import Tab from './Tab';
-import ScreenC from './screens/ScreenC';
-import ScreenD from './screens/ScreenD';
-import {StackParamList} from './screens/types';
+import {RootStackParamList} from 'shared/navigation';
+import {useDynamicLazy} from 'react-native-dynamic-module-federation';
 
-const StackNavigator = createStackNavigator<StackParamList>();
+const StackNavigator = createStackNavigator<
+  RootStackParamList & {
+    Tab: undefined;
+  }
+>();
 
 const Stack = () => {
-  const [test, setTest] = useState(true);
-
-  useEffect(() => {
-    setTimeout(() => {
-      setTest(false);
-    }, 3000);
-  }, []);
-
+  const AlphabetDetail = useDynamicLazy(
+    'alphabet',
+    './alphabet/screens/Detail',
+  );
   return (
     <StackNavigator.Navigator screenOptions={{headerShown: false}}>
       <StackNavigator.Screen name="Tab" component={Tab} />
-      {test && <StackNavigator.Screen name="ScreenC" component={ScreenC} />}
-      <StackNavigator.Screen name="ScreenD" component={ScreenD} />
+      <StackNavigator.Screen
+        name="alphabet:Detail"
+        component={AlphabetDetail}
+      />
     </StackNavigator.Navigator>
   );
 };

@@ -1,16 +1,15 @@
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import ScreenA from './screens/ScreenA';
-import ScreenB from './screens/ScreenB';
-import {TabParamList} from './screens/types';
+import {TabParamList} from 'shared/navigation';
+import {useDynamicLazy} from 'react-native-dynamic-module-federation';
 
 const TabNavigator = createBottomTabNavigator<TabParamList>();
 
 const Tab = () => {
+  const AlphabetMain = useDynamicLazy('alphabet', './alphabet/screens/Main');
   return (
     <TabNavigator.Navigator screenOptions={{headerShown: false}}>
-      <TabNavigator.Screen name="ScreenA" component={ScreenA} />
-      <TabNavigator.Screen name="ScreenB" component={ScreenB} />
+      <TabNavigator.Screen name="alphabet:Main" component={AlphabetMain} />
     </TabNavigator.Navigator>
   );
 };
