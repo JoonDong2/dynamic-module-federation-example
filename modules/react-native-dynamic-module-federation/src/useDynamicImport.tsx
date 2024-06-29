@@ -1,14 +1,10 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Federated } from '@callstack/repack/client';
-import { Context } from './ImportModuleProvider';
-
-export interface Containers {
-  [name: string]: string; // name: uri
-}
+import { Context } from './DynamicImportProvider';
 
 const Null = () => null;
 
-export function useImportModule<P = any>(
+export function useDynamicImport<P = any>(
   containerName: string,
   moduleName: string
 ): (props: P) => JSX.Element | null {
@@ -39,4 +35,4 @@ export function useImportModule<P = any>(
   return Lazy ?? Null;
 }
 
-export default useImportModule;
+export default useDynamicImport;
