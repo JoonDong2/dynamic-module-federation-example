@@ -131,7 +131,13 @@ export const DynamicImportProvider = forwardRef<
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (status.current !== 'success' && promiseOrError) {
+  if (
+    status.current !== 'success' &&
+    promiseOrError &&
+    // containers가 있다면 Promise나 Error를 다시 던지지 않는다.
+    // 필요하다면 useDynamicLazy/Module에서 던질 것이다.
+    (!containers || Object.keys(containers).length === 0)
+  ) {
     throw promiseOrError;
   }
 
