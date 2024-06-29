@@ -15,6 +15,7 @@ import {AppState, Text} from 'react-native';
 const DynamicImport = createDynamicImport({
   fetchContainers,
   deleteCacheFilesWhenRefresh: false,
+  suspense: true,
 });
 
 let appState = AppState.currentState;

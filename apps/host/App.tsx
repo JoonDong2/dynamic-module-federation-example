@@ -15,6 +15,7 @@ import Main from './src/Main';
 const DynamicImport = createDynamicImport({
   fetchContainers,
   deleteCacheFilesWhenRefresh: false,
+  suspense: true,
 });
 
 let appState = AppState.currentState;
