@@ -1,10 +1,10 @@
 import React from 'react';
 import {Text} from 'react-native';
-import {useImportModule} from 'react-native-dynamic-module-federation';
+import {useDynamicImport} from 'react-native-dynamic-module-federation';
 import {hocPipe, withErrorBoundary, withSuspense} from 'shared';
 
 const Main = () => {
-  const Entry = useImportModule('entry', './Entry');
+  const Entry = useDynamicImport('entry', './Entry');
   return <Entry />;
 };
 

@@ -1,24 +1,37 @@
 import {QueryClient} from '@tanstack/react-query';
 import React from 'react';
-import {Text} from 'react-native';
-import {ImportModuleProvider} from 'react-native-dynamic-module-federation';
+import {AppState, Text} from 'react-native';
+import {createDynamicImport} from 'react-native-dynamic-module-federation';
 import {
-  useContainers,
   hocPipe,
   withReactQuery,
   withErrorBoundary,
   withSuspense,
   withReactNavigation,
+  fetchContainers,
 } from 'shared';
 import Main from './src/Main';
 
-const App = () => {
-  const containers = useContainers({suspense: false});
+const DynamicImport = createDynamicImport({
+  fetchContainers,
+});
 
+let appState = AppState.currentState;
+
+// inactive 무시
+AppState.addEventListener('change', nextAppState => {
+  if (appState === 'background' && nextAppState === 'active') {
+    DynamicImport.refresh();
+  }
+
+  appState = nextAppState;
+});
+
+const App = () => {
   return (
-    <ImportModuleProvider containers={containers}>
+    <DynamicImport.Provider>
       <Main />
-    </ImportModuleProvider>
+    </DynamicImport.Provider>
   );
 };
 
