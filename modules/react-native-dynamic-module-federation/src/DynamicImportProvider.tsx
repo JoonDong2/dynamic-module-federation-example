@@ -14,6 +14,14 @@ import {
 import { generateResolver } from './resolver';
 import getSymetricDifference from './getSymetricDifference';
 
+declare global {
+  var disposeContainer:
+    | undefined
+    | {
+        [containerName: string]: undefined | (() => void);
+      };
+}
+
 export interface Containers {
   [name: string]: string; // uri
 }
