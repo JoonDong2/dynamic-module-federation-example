@@ -8,7 +8,7 @@ const TabNavigator = createBottomTabNavigator<TabParamList>();
 
 const Tab = () => {
   return (
-    <TabNavigator.Navigator>
+    <TabNavigator.Navigator screenOptions={{headerShown: false}}>
       <TabNavigator.Screen name="ScreenA" component={ScreenA} />
       <TabNavigator.Screen name="ScreenB" component={ScreenB} />
     </TabNavigator.Navigator>
