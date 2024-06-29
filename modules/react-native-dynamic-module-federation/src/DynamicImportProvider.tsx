@@ -18,7 +18,9 @@ declare global {
   var disposeContainer:
     | undefined
     | {
-        [containerName: string]: undefined | (() => void);
+        [containerName: string]:
+          | undefined
+          | ((deleteScript?: boolean) => void | Promise<void>);
       };
 }
 
@@ -42,19 +44,19 @@ export interface Props {
     | Containers
     | undefined
     | Promise<Containers | undefined>;
-  deleteScriptWhenRefresh?: boolean;
+  deleteCacheFilesWhenRefresh?: boolean;
 }
 
 type Status = 'pending' | 'success' | 'error';
 
 export interface DynamicImportProviderHandle {
-  refresh: () => void;
+  refresh: (deleteScript?: boolean) => void;
 }
 
 export const DynamicImportProvider = forwardRef<
   DynamicImportProviderHandle,
   PropsWithChildren<Props>
->(({ children, fetchContainers }, ref) => {
+>(({ children, fetchContainers, deleteCacheFilesWhenRefresh }, ref) => {
   const resolver = useRef<ScriptLocatorResolver>();
 
   const status = useRef<Status>('pending');
@@ -62,7 +64,7 @@ export const DynamicImportProvider = forwardRef<
   const [promiseOrError, setPromiseOrError] = useState<any>();
 
   const refresh = () => {
-    const success = (newContainers?: Containers) => {
+    const success = async (newContainers?: Containers) => {
       if (newContainers) {
         status.current = 'success';
         const newResolver = generateResolver(newContainers);
@@ -77,10 +79,20 @@ export const DynamicImportProvider = forwardRef<
           newContainers
         );
 
+        const promises: Promise<void>[] = [];
         changedContainers.forEach((containerName) => {
-          global.disposeContainer?.[containerName]?.();
+          // 첫 번째 container가 로드되기 전에 global.disposeContainers는 undefined다.
+          // 즉, 앱이 실행될 때는 globalDispose가 실행되지 않고, 아래 setContainers가 설정되고 conainers가 로드된 후에, 외부에서 refresh()를 호출했을 때 disposeContainers가 실행된다.
+          // 이것은 의도된 동작이다.
+          const maybePromise = global.disposeContainer?.[containerName]?.(
+            deleteCacheFilesWhenRefresh
+          );
+          if (maybePromise instanceof Promise) {
+            promises.push(maybePromise);
+          }
         });
 
+        await Promise.all(promises);
         setContainers(newContainers);
       }
     };

@@ -52,6 +52,23 @@ module.exports = class ReactNativeDynamicModuleFederationModule extends Module {
   }
 
   codeGeneration({ moduleGraph, chunkGraph, runtimeTemplate }) {
+    const chunkIncludingThisModule = Array.from(
+      chunkGraph.getModuleChunksIterable(this)
+    ).find((chunk) => chunk.id === this.name);
+
+    const chunkIds = [];
+
+    if (chunkIncludingThisModule) {
+      for (const chunkUsedInThisModule of chunkIncludingThisModule.getAllAsyncChunks()) {
+        const modules = chunkGraph.getChunkModulesIterableBySourceType(
+          chunkUsedInThisModule,
+          'consume-shared'
+        );
+        if (!modules) continue;
+        chunkIds.push(chunkUsedInThisModule.id);
+      }
+    }
+
     const sources = new Map();
 
     const runtimeRequirements = new Set([
@@ -66,7 +83,7 @@ module.exports = class ReactNativeDynamicModuleFederationModule extends Module {
         `${RuntimeGlobals.global}["${DISPOSE_CONTAINER_KEY}"] = {}`,
       ]),
       '}',
-      `${RuntimeGlobals.global}.${DISPOSE_CONTAINER_KEY}['${this.name}'] = function() {`,
+      `${RuntimeGlobals.global}.${DISPOSE_CONTAINER_KEY}['${this.name}'] = function(deleteCacheFiles) {`,
       Template.indent([
         `var webpackChunkKey = "webpackChunk${this.name}";`,
         'if (Array.isArray(self[webpackChunkKey]) && self[webpackChunkKey].length > 0) {',
@@ -74,6 +91,16 @@ module.exports = class ReactNativeDynamicModuleFederationModule extends Module {
         '}',
         `if (${RuntimeGlobals.hasOwnProperty}(${RuntimeGlobals.global}, "${this.name}")) {`,
         Template.indent([`delete ${RuntimeGlobals.global}.${this.name};`]),
+        '}',
+        'if (deleteCacheFiles) {',
+        Template.indent([
+          `var chunkIds = ${JSON.stringify(chunkIds)}`,
+          'if (chunkIds.length > 0) {',
+          Template.indent([
+            'return __webpack_require__.repack.shared.scriptManager.invalidateScripts(chunkIds) // @returns Promise<void>',
+          ]),
+          '}',
+        ]),
         '}',
       ]),
       '}\n',
