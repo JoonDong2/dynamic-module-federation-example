@@ -3,6 +3,9 @@ import path from 'node:path';
 import TerserPlugin from 'terser-webpack-plugin';
 import * as Repack from '@callstack/repack';
 import {getSharedDependencies, babelTargets} from 'shared/webpack';
+import packageJson from './package.json' with { type: "json" };
+
+const {name} = packageJson
 
 const dirname = Repack.getDirname(import.meta.url);
 const {resolve} = createRequire(import.meta.url);
@@ -225,7 +228,7 @@ export default env => {
         },
       }),
       new Repack.plugins.ModuleFederationPlugin({
-        name: 'host',
+        name,
         shared: getSharedDependencies({eager: true}),
       }),
     ],

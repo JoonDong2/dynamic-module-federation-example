@@ -5,6 +5,9 @@ import * as Repack from '@callstack/repack';
 import {getSharedDependencies, babelTargets} from 'shared/webpack';
 import ReactNativeDynamicModuleFederationPlugin from 'react-native-dynamic-module-federation/plugin';
 import 'dotenv/config';
+import packageJson from './package.json' with { type: "json" };
+
+const {name} = packageJson
 
 const dirname = Repack.getDirname(import.meta.url);
 const {resolve} = createRequire(import.meta.url);
@@ -227,13 +230,13 @@ export default env => {
         },
       }),
       new Repack.plugins.ModuleFederationPlugin({
-        name: 'entry',
+        name,
         shared: getSharedDependencies({eager: process.env.ROLE === 'host'}),
         exposes: {
           './Entry': './src/Entry',
         },
       }),
-      new ReactNativeDynamicModuleFederationPlugin({name: 'entry'}),
+      new ReactNativeDynamicModuleFederationPlugin({name}),
     ],
   };
 };
