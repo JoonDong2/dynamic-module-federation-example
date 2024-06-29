@@ -8,3 +8,5 @@ export {
   type DynamicImport,
 } from './createDynamicImport';
 export { default as useDynamicImport } from './useDynamicImport';
+export { default as useDynamicLazy } from './useDynamicLazy';
+export { default as useDynamicModule } from './useDynamicModule';
