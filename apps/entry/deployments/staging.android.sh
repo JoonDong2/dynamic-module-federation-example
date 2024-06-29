@@ -11,9 +11,13 @@ export $(grep -E '^(NATIVE_VERSION)=' .env | xargs)
 PACKAGE_JSON="${SCRIPT_DIR}/../package.json"
 
 NAME=$(grep '"name"' "$PACKAGE_JSON" | awk -F '"' '{print $4}')
-VERSION=$(grep '"version"' "$PACKAGE_JSON" | awk -F '"' '{print $4}')
+DEFAULT_VERSION=$(grep '"version"' "$PACKAGE_JSON" | awk -F '"' '{print $4}')
 
-read -p "버전 ${VERSION} 맞으면 엔터, 아니면 다른 버전 입력:" VERSION
+read -p "버전 ${DEFAULT_VERSION} 맞으면 엔터, 아니면 다른 버전 입력:" VERSION
+
+if [ -z "$VERSION" ]; then
+  VERSION="$DEFAULT_VERSION"
+fi
 
 DEPLOY_URL="localhost:4000/deployment"
 
