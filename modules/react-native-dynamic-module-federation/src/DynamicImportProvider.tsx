@@ -121,11 +121,7 @@ export const DynamicImportProvider = forwardRef<
               })
               .catch(error);
 
-            setPromiseOrError((prevPromiseOrError: any) => {
-              if (prevContainer || prevPromiseOrError)
-                return prevPromiseOrError;
-              return containersOrPromise;
-            });
+            setPromiseOrError(containersOrPromise);
           } else {
             success(prevContainer, containersOrPromise);
           }
