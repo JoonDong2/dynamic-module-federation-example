@@ -17,6 +17,7 @@ const Detail = () => {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        backgroundColor: 'beige',
       }}>
       <View style={{marginBottom: 10, alignItems: 'center'}}>
         <Text style={{fontSize: 30, fontWeight: 'bold'}}>{char}</Text>

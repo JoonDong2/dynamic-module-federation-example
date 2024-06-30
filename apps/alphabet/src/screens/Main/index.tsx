@@ -9,7 +9,7 @@ const ItemSeparatorComponent = () => (
 
 const Alphabet = () => {
   return (
-    <View style={{flex: 1}}>
+    <View style={{flex: 1, backgroundColor: 'beige'}}>
       <View style={{alignItems: 'center', padding: 10}}>
         <Text>Alphabet Main</Text>
       </View>
