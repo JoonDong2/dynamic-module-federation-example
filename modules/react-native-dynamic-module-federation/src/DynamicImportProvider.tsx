@@ -69,37 +69,38 @@ export const DynamicImportProvider = forwardRef<
     const [promiseOrError, setPromiseOrError] = useState<any>();
 
     const refresh = () => {
-      const success = async (newContainers?: Containers) => {
-        if (newContainers) {
-          status.current = 'success';
-          const newResolver = generateResolver(newContainers);
-          ScriptManager.shared.addResolver(newResolver);
-          if (resolver.current) {
-            ScriptManager.shared.removeResolver(resolver.current);
-          }
-          resolver.current = newResolver;
+      const success = async (
+        prevContainers?: Containers,
+        newContainers?: Containers
+      ) => {
+        if (!newContainers) return;
 
-          const changedContainers = getSymetricDifference(
-            containers,
-            newContainers
-          );
+        const difference = getSymetricDifference(prevContainers, newContainers);
+        if (difference.length === 0) return;
 
-          const promises: Promise<void>[] = [];
-          changedContainers.forEach((containerName) => {
-            // 첫 번째 container가 로드되기 전에 global.disposeContainers는 undefined다.
-            // 즉, 앱이 실행될 때는 globalDispose가 실행되지 않고, 아래 setContainers가 설정되고 conainers가 로드된 후에, 외부에서 refresh()를 호출했을 때 disposeContainers가 실행된다.
-            // 이것은 의도된 동작이다.
-            const maybePromise = global.disposeContainer?.[containerName]?.(
-              deleteCacheFilesWhenRefresh
-            );
-            if (maybePromise instanceof Promise) {
-              promises.push(maybePromise);
-            }
-          });
-
-          await Promise.all(promises);
-          setContainers(newContainers);
+        status.current = 'success';
+        const newResolver = generateResolver(newContainers);
+        ScriptManager.shared.addResolver(newResolver);
+        if (resolver.current) {
+          ScriptManager.shared.removeResolver(resolver.current);
         }
+        resolver.current = newResolver;
+
+        const promises: Promise<void>[] = [];
+        difference.forEach((containerName) => {
+          // 첫 번째 container가 로드되기 전에 global.disposeContainers는 undefined다.
+          // 즉, 앱이 실행될 때는 globalDispose가 실행되지 않고, 아래 setContainers가 설정되고 conainers가 로드된 후에, 외부에서 refresh()를 호출했을 때 disposeContainers가 실행된다.
+          // 이것은 의도된 동작이다.
+          const maybePromise = global.disposeContainer?.[containerName]?.(
+            deleteCacheFilesWhenRefresh
+          );
+          if (maybePromise instanceof Promise) {
+            promises.push(maybePromise);
+          }
+        });
+
+        await Promise.all(promises);
+        setContainers(newContainers);
       };
 
       const error = (e: any) => {
@@ -107,22 +108,33 @@ export const DynamicImportProvider = forwardRef<
         setPromiseOrError(e);
       };
 
-      try {
-        const containersOrPromise = fetchContainers();
-        if (containersOrPromise instanceof Promise) {
-          status.current = 'pending';
-          containersOrPromise
-            .then((newContainers) => {
-              success(newContainers);
-            })
-            .catch(error);
-          setPromiseOrError(containersOrPromise);
-        } else {
-          success(containersOrPromise);
+      setContainers((prevContainer) => {
+        try {
+          const containersOrPromise = fetchContainers();
+
+          if (containersOrPromise instanceof Promise) {
+            status.current = 'pending';
+
+            containersOrPromise
+              .then((newContainers) => {
+                success(prevContainer, newContainers);
+              })
+              .catch(error);
+
+            setPromiseOrError((prevPromiseOrError: any) => {
+              if (prevContainer || prevPromiseOrError)
+                return prevPromiseOrError;
+              return containersOrPromise;
+            });
+          } else {
+            success(prevContainer, containersOrPromise);
+          }
+        } catch (e) {
+          error(e);
         }
-      } catch (e) {
-        error(e);
-      }
+
+        return prevContainer; // 무조건 이전값 반환, 업데이트 판단용
+      });
     };
 
     useImperativeHandle(ref, () => {
@@ -142,7 +154,7 @@ export const DynamicImportProvider = forwardRef<
       promiseOrError &&
       // containers가 있다면 Promise나 Error를 다시 던지지 않는다.
       // 필요하다면 useDynamicLazy/Module에서 던질 것이다.
-      (!containers || Object.keys(containers).length === 0)
+      !containers
     ) {
       throw promiseOrError;
     }
