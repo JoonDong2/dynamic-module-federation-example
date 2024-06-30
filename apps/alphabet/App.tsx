@@ -1,15 +1,38 @@
 import React from 'react';
 import Stack from './src/Stack';
 import {
+  fetchContainers,
   hocPipe,
   withErrorBoundary,
   withReactNavigation,
   withSuspense,
 } from 'shared';
-import {Text} from 'react-native';
+import {AppState, Text} from 'react-native';
+import {createDynamicImport} from 'react-native-dynamic-module-federation';
+
+const DynamicImport = createDynamicImport({
+  fetchContainers,
+  deleteCacheFilesWhenRefresh: false,
+  suspense: true,
+});
+
+let appState = AppState.currentState;
+
+// inactive 무시
+AppState.addEventListener('change', nextAppState => {
+  if (appState === 'background' && nextAppState === 'active') {
+    DynamicImport.refresh();
+  }
+
+  appState = nextAppState;
+});
 
 const App = () => {
-  return <Stack />;
+  return (
+    <DynamicImport.Provider>
+      <Stack />
+    </DynamicImport.Provider>
+  );
 };
 
 export default hocPipe([
