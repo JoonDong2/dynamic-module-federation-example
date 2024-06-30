@@ -11,6 +11,9 @@ import {
   fetchContainers,
 } from 'shared';
 import Main from './src/Main';
+import {ScriptManager} from '@callstack/repack/client';
+
+ScriptManager.shared.setMaxListeners(100); // 필요에 따라 알맞게 설정
 
 const DynamicImport = createDynamicImport({
   fetchContainers,

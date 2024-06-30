@@ -11,6 +11,9 @@ import {
 import {createDynamicImport} from 'react-native-dynamic-module-federation';
 import {QueryClient} from '@tanstack/react-query';
 import {AppState, Text} from 'react-native';
+import {ScriptManager} from '@callstack/repack/client';
+
+ScriptManager.shared.setMaxListeners(100); // 필요에 따라 알맞게 설정
 
 const DynamicImport = createDynamicImport({
   fetchContainers,
