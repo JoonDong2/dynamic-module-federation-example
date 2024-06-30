@@ -7,7 +7,7 @@ const ItemSeparatorComponent = () => (
   <View style={{height: 1, width: '100%', backgroundColor: 'gray'}} />
 );
 
-const Alphabet = () => {
+const Main = () => {
   return (
     <View style={{flex: 1, backgroundColor: 'beige'}}>
       <View style={{alignItems: 'center', padding: 10}}>
@@ -25,4 +25,4 @@ const Alphabet = () => {
   );
 };
 
-export default Alphabet;
+export default Main;
