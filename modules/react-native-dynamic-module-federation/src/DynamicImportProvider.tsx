@@ -82,7 +82,10 @@ export const DynamicImportProvider = forwardRef<
         const newResolver = generateResolver(newContainers);
         ScriptManager.shared.addResolver(newResolver);
         if (resolver.current) {
-          ScriptManager.shared.removeResolver(resolver.current);
+          const resolverToDelete = resolver.current;
+          setImmediate(() => {
+            ScriptManager.shared.removeResolver(resolverToDelete);
+          });
         }
         resolver.current = newResolver;
 
