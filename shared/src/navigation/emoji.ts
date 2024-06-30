@@ -1,4 +1,4 @@
-export type AlphabetStackParamList = {
+export type EmojiStackParamList = {
   'emoji:Detail': {
     code: string;
   };

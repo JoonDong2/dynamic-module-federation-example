@@ -6,3 +6,4 @@ export {
   type RouteProp,
 } from './entry';
 export { type NumberStackParamList } from './number';
+export { type EmojiStackParamList } from './emoji';

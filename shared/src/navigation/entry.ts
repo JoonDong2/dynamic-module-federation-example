@@ -6,6 +6,7 @@ import type { AlphabetStackParamList } from './alphabet';
 import type { NumberStackParamList } from './number';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import type { StackNavigationProp } from '@react-navigation/stack';
+import type { EmojiStackParamList } from './emoji';
 
 export type TabParamList = {
   'alphabet:Main': undefined;
@@ -13,7 +14,9 @@ export type TabParamList = {
   'emoji:Main': undefined;
 };
 
-export type RootStackParamList = AlphabetStackParamList & NumberStackParamList;
+export type RootStackParamList = AlphabetStackParamList &
+  NumberStackParamList &
+  EmojiStackParamList;
 
 export type NavigationProp<TabName extends keyof TabParamList> =
   CompositeNavigationProp<
