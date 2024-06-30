@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "install": "sh ./scripts/install-all.sh"
+    "install": "sh ./scripts/install-all.sh",
+    "deploy:android": "sh ./scripts/deployments/staging.android.sh"
   },
   "author": "Joondong",
   "license": "MIT"
