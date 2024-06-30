@@ -1,12 +1,17 @@
 import React, {
+  Component,
+  Suspense,
   useContext,
   useEffect,
   useRef,
   useState,
-  type PropsWithChildren,
+  type FunctionComponent,
+  type ReactElement,
+  type ReactNode,
 } from 'react';
 import { Federated } from '@callstack/repack/client';
 import { Context } from './DynamicImportProvider';
+import { ErrorBoundary } from 'react-error-boundary';
 
 const Null = () => null;
 
@@ -14,10 +19,18 @@ export function useDynamicLazy<P = any>(
   containerName: string,
   moduleName: string,
   options?: {
-    wrapper: (props: PropsWithChildren) => React.ReactElement;
+    fallbacks?: {
+      suspense?: ReactNode;
+      error?: ReactElement<
+        unknown,
+        string | FunctionComponent | typeof Component
+      > | null;
+    };
   }
 ): (props: P) => JSX.Element | null {
-  const Wrapper = options?.wrapper;
+  const SuspenseFallback = options?.fallbacks?.suspense ?? null;
+  const ErrorBoundaryFallback = options?.fallbacks?.error ?? null;
+
   const { containers } = useContext(Context);
 
   const uri = useRef(containers?.[containerName]);
@@ -37,14 +50,13 @@ export function useDynamicLazy<P = any>(
           );
 
           return (props: P) => {
-            if (Wrapper) {
-              return (
-                <Wrapper>
+            return (
+              <ErrorBoundary fallback={ErrorBoundaryFallback}>
+                <Suspense fallback={SuspenseFallback}>
                   <NewLazy {...props} />
-                </Wrapper>
-              );
-            }
-            return <NewLazy {...props} />;
+                </Suspense>
+              </ErrorBoundary>
+            );
           };
         }
       }
