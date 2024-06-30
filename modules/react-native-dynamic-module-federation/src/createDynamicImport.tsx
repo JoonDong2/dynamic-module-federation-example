@@ -26,6 +26,7 @@ const createDynamicImport = (defaultProps: Props): DynamicImport => {
       ref.current?.refresh();
     };
 
+    // DynamicImport.Provider는 DynamicImportProvider와 달리, 외부에서 컨트롤할 것이기 때문에 ref를 막는다.
     return (
       <DynamicImportProvider {...defaultProps} {...props} ref={ref}>
         {children}
