@@ -6,6 +6,7 @@ import React, {
   useRef,
   useState,
   type FunctionComponent,
+  type PropsWithChildren,
   type ReactElement,
   type ReactNode,
 } from 'react';
@@ -28,9 +29,6 @@ export function useDynamicLazy<P = any>(
     };
   }
 ): (props: P) => JSX.Element | null {
-  const SuspenseFallback = options?.fallbacks?.suspense ?? null;
-  const ErrorBoundaryFallback = options?.fallbacks?.error ?? null;
-
   const { containers } = useContext(Context);
 
   const uri = useRef(containers?.[containerName]);
@@ -51,11 +49,21 @@ export function useDynamicLazy<P = any>(
 
           return (props: P) => {
             return (
-              <ErrorBoundary fallback={ErrorBoundaryFallback}>
-                <Suspense fallback={SuspenseFallback}>
-                  <NewLazy {...props} />
-                </Suspense>
-              </ErrorBoundary>
+              [
+                [ErrorBoundary, options?.fallbacks?.error],
+                [Suspense, options?.fallbacks?.suspense],
+              ] as [
+                React.ComponentType<
+                  PropsWithChildren<{ fallback: React.ReactNode }>
+                >,
+                React.ReactNode,
+              ][]
+            ).reduceRight(
+              (acc, [Wrapper, fallback]) => {
+                if (!React.isValidElement(fallback)) return acc;
+                return <Wrapper fallback={fallback}>{acc}</Wrapper>;
+              },
+              <NewLazy {...props} />
             );
           };
         }
