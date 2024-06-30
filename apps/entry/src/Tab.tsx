@@ -13,9 +13,18 @@ const Tab = () => {
       error: <Text>Alphabet Main 오류</Text>,
     },
   });
+
+  const NumberMain = useDynamicLazy('number', './number/screens/Main', {
+    fallbacks: {
+      suspense: <Text>Alphabet Main 로딩중</Text>,
+      error: <Text>Alphabet Main 오류</Text>,
+    },
+  });
+
   return (
     <TabNavigator.Navigator screenOptions={{headerShown: false}}>
       <TabNavigator.Screen name="alphabet:Main" component={AlphabetMain} />
+      <TabNavigator.Screen name="number:Main" component={NumberMain} />
     </TabNavigator.Navigator>
   );
 };

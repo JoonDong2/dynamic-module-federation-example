@@ -22,6 +22,13 @@ const Stack = () => {
       },
     },
   );
+
+  const NumberDetail = useDynamicLazy('number', './number/screens/Detail', {
+    fallbacks: {
+      suspense: <Text>Number Detail 로딩중</Text>,
+      error: <Text>Number Detail 오류</Text>,
+    },
+  });
   return (
     <StackNavigator.Navigator screenOptions={{headerShown: false}}>
       <StackNavigator.Screen name="Tab" component={Tab} />
@@ -29,6 +36,7 @@ const Stack = () => {
         name="alphabet:Detail"
         component={AlphabetDetail}
       />
+      <StackNavigator.Screen name="number:Detail" component={NumberDetail} />
     </StackNavigator.Navigator>
   );
 };
