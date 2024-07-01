@@ -36,17 +36,20 @@ app.get(
   handleError(async (req, res) => {
     const query = req.query;
     const groupPath = PATH_FOR_GROUPING.map((key) => query[key]).join("/");
-    const remotesPath = `${DEPLOYMENTS_PATH}/${groupPath}`;
-    const remotes = await fs.getFolders(remotesPath);
+    const containersPath = `${DEPLOYMENTS_PATH}/${groupPath}`;
+    const containers = await fs.getFolders(containersPath);
+
     const resolvers = Object.fromEntries(
-      await Promise.all(
-        remotes.map(async (remote) => {
-          const maxVersion = version.max(
-            await fs.getFolders(`${remotesPath}/${remote}`)
-          );
-          return [remote, `${groupPath}/${remote}/${maxVersion}`];
-        })
-      )
+      (
+        await Promise.all(
+          containers.map(async (remote) => {
+            const versions = await fs.getFolders(`${containersPath}/${remote}`);
+            const maxVersion = version.max(versions);
+            if (!maxVersion) return undefined;
+            return [remote, `${groupPath}/${remote}/${maxVersion}`];
+          })
+        )
+      ).filter((entry) => !!entry)
     );
     res.json(resolvers);
   })
@@ -69,6 +72,21 @@ app.post(
       throw new Error("배포 파일 압축 해제 실패");
     }
     res.sendStatus(201);
+  })
+);
+
+app.get(
+  "/version/:name",
+  ...validateContainers(),
+  handleError(async (req, res) => {
+    const query = req.query;
+    const groupPath = PATH_FOR_GROUPING.map((key) => query[key]).join("/");
+    const containerPath = `${DEPLOYMENTS_PATH}/${groupPath}/${req.params.name}`;
+    const versions = await fs.getFolders(containerPath);
+
+    res.json({
+      version: version.max(versions),
+    });
   })
 );
 

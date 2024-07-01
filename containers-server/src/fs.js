@@ -1,6 +1,6 @@
-import fs from 'fs';
-import path from 'path';
-import unzipper from 'unzipper';
+import fs from "fs";
+import path from "path";
+import unzipper from "unzipper";
 
 export async function exists(accessPath) {
   try {
@@ -41,7 +41,7 @@ export async function remove(p) {
 
 export async function unzip(zipPath, outputPath) {
   const directory = await unzipper.Open.file(zipPath);
-  await directory.extract({path: outputPath});
+  await directory.extract({ path: outputPath });
 }
 
 // 특정 경로에 있는 폴더 리스트를 얻는 함수
@@ -49,14 +49,14 @@ function getFolders(directoryPath) {
   return new Promise((resolve, reject) => {
     fs.readdir(directoryPath, (error, files) => {
       if (error) {
-        return reject(error);
+        return resolve([]);
       }
 
       let folders = [];
       let length = files.length;
 
       if (length) {
-        files.forEach(file => {
+        files.forEach((file) => {
           const filePath = path.join(directoryPath, file);
           fs.lstat(filePath, (error, stats) => {
             if (error) {
@@ -72,6 +72,8 @@ function getFolders(directoryPath) {
             }
           });
         });
+      } else {
+        resolve([]);
       }
     });
   });

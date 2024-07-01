@@ -49,8 +49,28 @@ const validateAlreadyDeployment = handleError(async (req, _, next) => {
   next();
 }, 400);
 
+const versionPattern = /^\d+\.\d+\.\d+$/;
+
+const validateVersion = handleError((req, _, next) => {
+  const version = req.body["version"];
+
+  if (!versionPattern.test(version)) {
+    throw new Error("버전 형태가 세 자리 버전이 아닙니다.");
+  }
+
+  next();
+}, 400);
+
+function isValidVersionString(version) {
+  // 정규 표현식 패턴
+  const pattern = /^\d+\.\d+\.\d+$/;
+  // 문자열과 패턴을 비교하여 일치 여부 반환
+  return pattern.test(version);
+}
+
 export default () => [
   validateIncludingFile,
   validateBody,
   validateAlreadyDeployment,
+  validateVersion,
 ];
