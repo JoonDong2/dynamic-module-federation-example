@@ -7,7 +7,8 @@
     "install": "sh ./scripts/install-all.sh",
     "deploy:android": "sh ./scripts/deployments/staging.android.sh",
     "deploy:android:all": "sh ./scripts/deployments/staging.android.all.sh",
-    "server": "sh ./scripts/containers-server.sh"
+    "server": "sh ./scripts/containers-server.sh",
+    "android:staging": "sh ./scripts/android.staging.sh"
   },
   "author": "Joondong",
   "license": "MIT"
