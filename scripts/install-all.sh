@@ -13,6 +13,20 @@ for dir in $ROOT/apps/*; do
   fi
 done
 
+# modules 폴더의 모든 하위 폴더에서 npm install 실행
+for dir in $ROOT/modules/*; do
+  if [ -d "$dir" ]; then
+    echo "Running npm install in $dir"
+    (cd "$dir" && npm install)
+  fi
+done
+
+# shared 폴더에서 npm install 실행
+if [ -d "$ROOT/shared" ]; then
+  echo "Running npm install in shared"
+  (cd "$ROOT/shared" && npm install)
+fi
+
 # server 폴더에서 npm install 실행
 if [ -d "$ROOT/containers-server" ]; then
   echo "Running npm install in containers-server"
