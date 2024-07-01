@@ -80,13 +80,12 @@ export const DynamicImportProvider = forwardRef<
 
         status.current = 'success';
         const newResolver = generateResolver(newContainers);
-        ScriptManager.shared.addResolver(newResolver);
         if (resolver.current) {
           const resolverToDelete = resolver.current;
-          setImmediate(() => {
-            ScriptManager.shared.removeResolver(resolverToDelete);
-          });
+          ScriptManager.shared.removeResolver(resolverToDelete);
         }
+        ScriptManager.shared.addResolver(newResolver);
+
         resolver.current = newResolver;
 
         const promises: Promise<void>[] = [];
