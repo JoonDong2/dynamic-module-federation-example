@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SCRIPT_DIR=$(dirname "$0")
+SCRIPT_DIR=$(readlink -f "$(dirname "$0")")
 ROOT=$SCRIPT_DIR/../..
 
 echo "모든 앱을 배포합니다."
