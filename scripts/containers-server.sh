@@ -13,6 +13,9 @@ tell application "Terminal"
     do script "cd ${ROOT}/containers-server; npm run start;"
 end tell
 END
+
+  sleep 5
+  echo ""
 }
 
 nc -zv "localhost" "4000"
