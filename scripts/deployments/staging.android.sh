@@ -1,7 +1,6 @@
 #!/bin/zsh
 
 NAME=$1
-
 AUTO=$2
 
 if [[ "$NAME" =~ "host" ]]; then
@@ -17,6 +16,8 @@ if [ ! -d "$ROOT" ]; then
   echo "앱이 존재하지 않습니다: $ROOT"
   exit 1  
 fi
+
+(cd "$SCRIPT_DIR/../../" && npm run server)
 
 cp $ROOT/env/.env.host.development .env
 
