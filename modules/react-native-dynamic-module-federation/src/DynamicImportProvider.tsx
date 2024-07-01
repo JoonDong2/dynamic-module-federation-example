@@ -158,7 +158,9 @@ export const DynamicImportProvider = forwardRef<
     }
 
     return (
-      <Context.Provider value={{ containers }}>{children}</Context.Provider>
+      <Context.Provider value={{ containers }}>
+        <>{children}</>
+      </Context.Provider>
     );
   }
 );
