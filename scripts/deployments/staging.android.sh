@@ -1,7 +1,8 @@
 #!/bin/zsh
 
 NAME=$1
-echo $NAME
+
+AUTO=$2
 
 if [[ "$NAME" =~ "host" ]]; then
   echo "host는 배포하지 않습니다."
@@ -11,7 +12,6 @@ fi
 SCRIPT_DIR=$(readlink -f "$(dirname "$0")")
 
 ROOT=$SCRIPT_DIR/../../apps/$NAME
-echo $ROOT
 
 if [ ! -d "$ROOT" ]; then
   echo "앱이 존재하지 않습니다: $ROOT"
@@ -42,9 +42,11 @@ IFS='.' read -r -a version_parts <<< "$LAST_VERSION"
 
 # 증가된 버전 번호 다시 결합
 DEFAULT_VERSION="${version_parts[0]}.${version_parts[1]}.${version_parts[2]}"
+VERSION=$DEFAULT_VERSION
 
-
-read -p "버전 ${DEFAULT_VERSION} 맞으면 엔터, 아니면 다른 버전 입력:" VERSION
+if ! [[ $AUTO =~ "auto" ]]; then
+  read -p "버전 ${DEFAULT_VERSION} 맞으면 엔터, 아니면 다른 버전 입력:" VERSION
+fi
 
 if [ -z "$VERSION" ]; then
   VERSION="$DEFAULT_VERSION"
@@ -58,6 +60,8 @@ if ! [[ $VERSION =~ $VERSION_PATTERN ]]; then
   echo "세 자리 버전 형태가 아닙니다. ($VERSION)"
   exit 1
 fi
+
+echo "[ $NAME ${DEFAULT_VERSION} 버전 배포] "
 
 DEPLOY_URL="localhost:4000/deployment"
 
@@ -73,8 +77,6 @@ npm run bundle:android
 ZIP_FILE="archive.android.zip"
 
 cd "$SOURCE_DIR"
-
-echo "$SOURCE_DIR"
 
 # 압축 파일 생성
 zip -r "$ZIP_FILE" ./
