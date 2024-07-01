@@ -1,6 +1,6 @@
 import {QueryClient} from '@tanstack/react-query';
 import React from 'react';
-import {AppState, Text} from 'react-native';
+import {AppState, Button, Text, TouchableOpacity, View} from 'react-native';
 import {createDynamicImport} from 'react-native-dynamic-module-federation';
 import {
   hocPipe,
@@ -34,9 +34,24 @@ AppState.addEventListener('change', nextAppState => {
 
 const App = () => {
   return (
-    <DynamicImport.Provider>
-      <Main />
-    </DynamicImport.Provider>
+    <>
+      <DynamicImport.Provider>
+        <Main />
+      </DynamicImport.Provider>
+      <View
+        style={{
+          position: 'absolute',
+          right: 15,
+          bottom: 60,
+        }}>
+        <Button
+          title="앱 업데이트"
+          onPress={() => {
+            DynamicImport.refresh();
+          }}
+        />
+      </View>
+    </>
   );
 };
 
