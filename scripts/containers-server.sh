@@ -6,6 +6,7 @@ SCRIPT_DIR=$(readlink -f "$(dirname "$0")")
 ROOT=$SCRIPT_DIR/..
 
 open_containers_server() {
+  echo "localhost:4000에서 containers-server를 실행시킵니다."
 osascript <<END
 tell application "Terminal"
     activate
@@ -30,7 +31,6 @@ else
     if [ $EXIT_4000 == 'y' ]; then
       PID=$(lsof -t -i :4000 -s TCP:LISTEN -P)
       kill -9 $PID
-      echo "containers-server를 localhost:4000번에서 실행시킵니다."
       open_containers_server
     # 거절하면 종료
     else
