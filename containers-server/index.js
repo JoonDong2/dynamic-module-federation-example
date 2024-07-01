@@ -90,6 +90,13 @@ app.get(
   })
 );
 
+app.get("/status", (req, res) => {
+  const key = req.query?.key;
+  res.json({
+    key,
+  });
+});
+
 app.listen(PORT, () => {
   console.log(`Server running on ${PORT}`);
 });
