@@ -29,6 +29,14 @@ const Stack = () => {
       error: <Text>Number Detail 오류</Text>,
     },
   });
+
+  // const EmojiDetail = useDynamicLazy('emoji', './emoji/screens/Detail', {
+  //   fallbacks: {
+  //     suspense: <Text>Emoji Detail 로딩중</Text>,
+  //     error: <Text>Emoji Detail 오류</Text>,
+  //   },
+  // });
+
   return (
     <StackNavigator.Navigator screenOptions={{headerShown: false}}>
       <StackNavigator.Screen name="Tab" component={Tab} />
@@ -37,6 +45,7 @@ const Stack = () => {
         component={AlphabetDetail}
       />
       <StackNavigator.Screen name="number:Detail" component={NumberDetail} />
+      {/* <StackNavigator.Screen name="emoji:Detail" component={EmojiDetail} /> */}
     </StackNavigator.Navigator>
   );
 };

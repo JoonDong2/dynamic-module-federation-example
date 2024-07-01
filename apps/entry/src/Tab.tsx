@@ -21,10 +21,18 @@ const Tab = () => {
     },
   });
 
+  // const EmojiMain = useDynamicLazy('emoji', './emoji/screens/Main', {
+  //   fallbacks: {
+  //     suspense: <Text>Emoji Main 로딩중</Text>,
+  //     error: <Text>Emoji Main 오류</Text>,
+  //   },
+  // });
+
   return (
     <TabNavigator.Navigator screenOptions={{headerShown: false}}>
       <TabNavigator.Screen name="alphabet:Main" component={AlphabetMain} />
       <TabNavigator.Screen name="number:Main" component={NumberMain} />
+      {/* <TabNavigator.Screen name="emoji:Main" component={EmojiMain} /> */}
     </TabNavigator.Navigator>
   );
 };
