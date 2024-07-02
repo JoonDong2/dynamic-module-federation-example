@@ -25,8 +25,6 @@ export function useDynamicModule<T = any>(
     if (newUri) {
       if (uri.current !== newUri) {
         uri.current = newUri;
-        // 익명 컴포넌트가 아니면 밖에서 컴포넌트 내용이 변경된 것을 인식하지 못한다.
-        // Promise를 대신 던져준다.
         const promise = Federated.importModule<T>(containerName, moduleName);
         status.current = 'pending';
         promise
@@ -43,7 +41,7 @@ export function useDynamicModule<T = any>(
     }
   }, [containers, containerName, moduleName]);
 
-  if (status.current !== 'success' && promiseOrError && suspense && !module) {
+  if (suspense && status.current !== 'success' && promiseOrError && !module) {
     throw promiseOrError;
   }
 
