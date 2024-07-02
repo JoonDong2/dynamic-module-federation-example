@@ -1,6 +1,6 @@
 import {QueryClient} from '@tanstack/react-query';
 import React from 'react';
-import {AppState, Button, Text, TouchableOpacity, View} from 'react-native';
+import {AppState, Button, Text, View} from 'react-native';
 import {createDynamicImport} from 'react-native-dynamic-module-federation';
 import {
   hocPipe,
