@@ -1,7 +1,5 @@
 # react-native-dynamic-module-federation
 
-## 설명
-
 ### DinamicImportProvider
 
 `fetchContainers` 함수를 외부에서 입력받고, 해당 함수를 사용하여 `containers` 정보를 사용하여 `@callstack/reapck/client.ScriptManager`의 `resolver`를 만들고 등록합니다.
