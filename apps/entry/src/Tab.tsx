@@ -16,8 +16,8 @@ const Tab = () => {
 
   const NumberMain = useDynamicLazy('number', './number/screens/Main', {
     fallbacks: {
-      suspense: <Text>Alphabet Main 로딩중</Text>,
-      error: <Text>Alphabet Main 오류</Text>,
+      suspense: <Text>Number Main 로딩중</Text>,
+      error: <Text>Number Main 오류</Text>,
     },
   });
 
