@@ -8,7 +8,6 @@
     "ios:host:dev": "cp env/.env.host.development .env && echo \"env/.env.host.development\" > /tmp/envfile && touch \"node_modules/react-native-config/ios/ReactNativeConfig/BuildDotenvConfig.rb\" && cross-env ENVFILE=env/.env.host.development react-native run-ios",
     "ios:host:staging": "cp env/.env.host.staging .env && echo \"env/.env.host.staging\" > /tmp/envfile && touch \"node_modules/react-native-config/ios/ReactNativeConfig/BuildDotenvConfig.rb\" && cross-env ENVFILE=env/.env.host.staging react-native run-ios",
     "bundle:android": "cp env/.env.remote.staging .env && ENVFILE=.env react-native webpack-bundle --platform android --entry-file index.js --dev true",
-    "deploy:android": "sh deployments/staging.android.sh",
     "lint": "eslint .",
     "start": "react-native start",
     "dev": "react-native start --port=9002",
