@@ -1,31 +1,5 @@
-# react-native-shared
+# shared
 
- 
+모든 미니앱에서 공통으로 사용되는 데이터, 타입, 함수 등을 모아 놓은 라이브러리입니다.
 
-## Installation
-
-```sh
-npm install react-native-shared
-```
-
-## Usage
-
-```js
-import { multiply } from 'react-native-shared';
-
-// ...
-
-const result = await multiply(3, 7);
-```
-
-## Contributing
-
-See the [contributing guide](CONTRIBUTING.md) to learn how to contribute to the repository and the development workflow.
-
-## License
-
-MIT
-
----
-
-Made with [create-react-native-library](https://github.com/callstack/react-native-builder-bob)
+호스트에서 `eager: true`로 로드되도록 해놨기 때문에, 다른 미니 앱에서도 호스트의 `shared` 모듈을 동기적으로 사용합니다.
