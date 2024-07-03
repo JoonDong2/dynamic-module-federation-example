@@ -18,16 +18,20 @@ const Stack = () => {
     'alphabet',
     './alphabet/screens/Detail',
     {
-      fallbacks: {
-        suspense: <Text>AlphabetDetail 로딩중</Text>,
-        error: <Text>AlphabetDetail 오류</Text>,
+      error: {
+        fallback: <Text>Alphabet Detail 오류</Text>,
+      },
+      suspenes: {
+        fallback: <Text>Alphabet Detail 로딩중</Text>,
       },
     },
   );
   const NumberDetail = useDynamicLazy('number', './number/screens/Detail', {
-    fallbacks: {
-      suspense: <Text>NumberDetail 로딩중</Text>,
-      error: <Text>NumberDetail 오류</Text>,
+    error: {
+      fallback: <Text>Number Detail 오류</Text>,
+    },
+    suspenes: {
+      fallback: <Text>Number Detail 로딩중</Text>,
     },
   });
   return (

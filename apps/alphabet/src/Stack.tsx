@@ -15,9 +15,11 @@ export const StackNavigator = createStackNavigator<
 // 개발용
 const Stack = () => {
   const NumberDetail = useDynamicLazy('number', './number/screens/Detail', {
-    fallbacks: {
-      suspense: <Text>NumberDetail 로딩중</Text>,
-      error: <Text>NumberDetail 오류</Text>,
+    error: {
+      fallback: <Text>Number Detail 오류</Text>,
+    },
+    suspenes: {
+      fallback: <Text>Number Detail 로딩중</Text>,
     },
   });
   return (

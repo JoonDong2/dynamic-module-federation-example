@@ -1,16 +1,13 @@
 import React, {
-  Component,
   Suspense,
   useContext,
   useRef,
-  type FunctionComponent,
-  type PropsWithChildren,
-  type ReactElement,
+  type ErrorInfo,
   type ReactNode,
 } from 'react';
 import { Federated } from '@callstack/repack/client';
 import { Context } from './DynamicImportProvider';
-import { ErrorBoundary } from 'react-error-boundary';
+import { ErrorBoundary, type ErrorBoundaryProps } from 'react-error-boundary';
 import useMemoWithPrev from './useMemoWithPrev';
 
 const Null = () => null;
@@ -19,12 +16,11 @@ export function useDynamicLazy<P = any>(
   containerName: string,
   moduleName: string,
   options?: {
-    fallbacks?: {
-      suspense?: ReactNode;
-      error?: ReactElement<
-        unknown,
-        string | FunctionComponent | typeof Component
-      > | null;
+    error?: ErrorBoundaryProps;
+    suspenes?: {
+      fallback?: ReactNode;
+      timeout?: number;
+      onTimeout?: () => void;
     };
   }
 ): (props: P) => JSX.Element | null {
@@ -40,28 +36,49 @@ export function useDynamicLazy<P = any>(
           uri.current = newUri;
           // 익명 컴포넌트가 아니면 밖에서 컴포넌트 내용이 변경된 것을 인식하지 못한다.
           // Promise를 대신 던져준다.
-          const NewOriginLazy = React.lazy(() =>
-            Federated.importModule(containerName, moduleName)
-          );
+          const NewOriginLazy = React.lazy(() => {
+            const promises = [
+              Federated.importModule(containerName, moduleName),
+            ];
+
+            if (options?.suspenes?.timeout) {
+              promises.push(
+                new Promise((_, reject) => {
+                  setTimeout(() => {
+                    if (typeof options?.suspenes?.onTimeout === 'function') {
+                      options.suspenes.onTimeout();
+                    }
+                    reject(new Error('useDynamicLazy Timeout'));
+                  }, options!.suspenes!.timeout);
+                })
+              );
+            }
+
+            return Promise.race(promises);
+          });
 
           const NewLazy = (props: P) => {
-            return (
-              [
-                [ErrorBoundary, options?.fallbacks?.error],
-                [Suspense, options?.fallbacks?.suspense],
-              ] as [
-                React.ComponentType<
-                  PropsWithChildren<{ fallback: React.ReactNode }>
-                >,
-                React.ReactNode,
-              ][]
-            ).reduceRight(
-              (acc, [Wrapper, fallback]) => {
-                if (!React.isValidElement(fallback)) return acc;
-                return <Wrapper fallback={fallback}>{acc}</Wrapper>;
-              },
-              <NewOriginLazy {...props} />
-            );
+            let component = <NewOriginLazy {...props} />;
+            if (options?.suspenes?.fallback) {
+              component = (
+                <Suspense fallback={options.suspenes.fallback}>
+                  {component}
+                </Suspense>
+              );
+            }
+            if (options?.error) {
+              const onError = (error: Error, info: ErrorInfo) => {
+                uri.current = undefined; // 다음 컨테이너 업데이트시 memo 재계산하기 위해서
+                options?.error?.onError?.(error, info);
+              };
+              component = (
+                <ErrorBoundary {...options.error} onError={onError}>
+                  {component}
+                </ErrorBoundary>
+              );
+            }
+
+            return component;
           };
 
           return NewLazy;

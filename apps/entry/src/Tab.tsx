@@ -8,23 +8,29 @@ const TabNavigator = createBottomTabNavigator<TabParamList>();
 
 const Tab = () => {
   const AlphabetMain = useDynamicLazy('alphabet', './alphabet/screens/Main', {
-    fallbacks: {
-      suspense: <Text>Alphabet Main 로딩중</Text>,
-      error: <Text>Alphabet Main 오류</Text>,
+    error: {
+      fallback: <Text>Alphabet Main 오류</Text>,
+    },
+    suspenes: {
+      fallback: <Text>Alphabet Main 로딩중</Text>,
     },
   });
 
   const NumberMain = useDynamicLazy('number', './number/screens/Main', {
-    fallbacks: {
-      suspense: <Text>Number Main 로딩중</Text>,
-      error: <Text>Number Main 오류</Text>,
+    error: {
+      fallback: <Text>Number Main 오류</Text>,
+    },
+    suspenes: {
+      fallback: <Text>Number Main 로딩중</Text>,
     },
   });
 
   // const EmojiMain = useDynamicLazy('emoji', './emoji/screens/Main', {
-  //   fallbacks: {
-  //     suspense: <Text>Emoji Main 로딩중</Text>,
-  //     error: <Text>Emoji Main 오류</Text>,
+  //   error: {
+  //     fallback: <Text>Emoji Main 오류</Text>,
+  //   },
+  //   suspenes: {
+  //     fallback: <Text>Emoji Main 로딩중</Text>,
   //   },
   // });
 
