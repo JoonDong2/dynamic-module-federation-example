@@ -20,7 +20,14 @@ declare global {
     | {
         [containerName: string]:
           | undefined
-          | ((deleteScript?: boolean) => void | Promise<void>);
+          | ((deleteCacheFile?: boolean) => void);
+      };
+  var deleteCacheFile:
+    | undefined
+    | {
+        [containerName: string]:
+          | undefined
+          | ((deleteCacheFile?: boolean) => Promise<void> | undefined); // 삭제할 파일이 있다면 Promise가 반환된다.
       };
 }
 
@@ -40,10 +47,7 @@ export const Context: React.Context<ContextProps> =
   createContext(initialContext);
 
 export interface Props {
-  fetchContainers: () =>
-    | Containers
-    | undefined
-    | Promise<Containers | undefined>;
+  fetchContainers: () => Containers | Promise<Containers>;
   deleteCacheFilesWhenRefresh?: boolean;
   suspense?: boolean;
 }
@@ -64,77 +68,77 @@ export const DynamicImportProvider = forwardRef<
   ) => {
     const resolver = useRef<ScriptLocatorResolver>();
 
+    const updateResolver = (containers: Containers) => {
+      const newResolver = generateResolver(containers);
+
+      if (resolver.current) {
+        const resolverToDelete = resolver.current;
+        ScriptManager.shared.removeResolver(resolverToDelete);
+      }
+
+      ScriptManager.shared.addResolver(newResolver);
+
+      resolver.current = newResolver;
+    };
+
     const status = useRef<Status>('pending');
     const [containers, setContainers] = useState<Containers>();
     const [promiseOrError, setPromiseOrError] = useState<any>();
 
-    const refresh = () => {
-      const success = async (
-        prevContainers?: Containers,
-        newContainers?: Containers
-      ) => {
-        if (!newContainers) return;
+    const _onError = (e: any) => {
+      status.current = 'error';
+      setPromiseOrError(e);
+    };
 
-        const difference = getSymetricDifference(prevContainers, newContainers);
-        if (difference.length === 0) return;
+    const disposeContainer = (containerName: string) => {
+      global.disposeContainer?.[containerName]?.();
 
-        status.current = 'success';
-        const newResolver = generateResolver(newContainers);
-        if (resolver.current) {
-          const resolverToDelete = resolver.current;
-          ScriptManager.shared.removeResolver(resolverToDelete);
+      if (!deleteCacheFilesWhenRefresh) return;
+      return global.deleteCacheFile?.[containerName]?.();
+    };
+
+    const _onSuccess = async (newContainers: Containers) => {
+      const difference = getSymetricDifference(containers, newContainers);
+
+      if (difference.length === 0) return;
+
+      // 컨테이너를 업데이트하기 전에 resolver를 미리 변경시켜 놓는다.
+      updateResolver(newContainers);
+
+      const deleteTasks: Promise<void>[] = [];
+      difference.forEach((containerName) => {
+        const deleteTask = disposeContainer(containerName);
+        if (deleteTask) {
+          deleteTasks.push(deleteTask);
         }
-        ScriptManager.shared.addResolver(newResolver);
-
-        resolver.current = newResolver;
-
-        const promises: Promise<void>[] = [];
-        difference.forEach((containerName) => {
-          // 첫 번째 container가 로드되기 전에 global.disposeContainers는 undefined다.
-          // 즉, 앱이 실행될 때는 globalDispose가 실행되지 않고, 아래 setContainers가 설정되고 conainers가 로드된 후에, 외부에서 refresh()를 호출했을 때 disposeContainers가 실행된다.
-          // 이것은 의도된 동작이다.
-          const maybePromise = global.disposeContainer?.[containerName]?.(
-            deleteCacheFilesWhenRefresh
-          );
-          if (maybePromise instanceof Promise) {
-            promises.push(maybePromise);
-          }
-        });
-
-        if (promises.length > 0) {
-          await Promise.all(promises);
-        }
-        setContainers(newContainers);
-      };
-
-      const error = (e: any) => {
-        status.current = 'error';
-        setPromiseOrError(e);
-      };
-
-      setContainers((prevContainer) => {
-        try {
-          const containersOrPromise = fetchContainers();
-
-          if (containersOrPromise instanceof Promise) {
-            status.current = 'pending';
-
-            containersOrPromise
-              .then((newContainers) => {
-                success(prevContainer, newContainers);
-              })
-              .catch(error);
-
-            setPromiseOrError(containersOrPromise);
-          } else {
-            success(prevContainer, containersOrPromise);
-          }
-        } catch (e) {
-          error(e);
-        }
-
-        return prevContainer; // 무조건 이전값 반환, 업데이트 판단용
       });
+
+      if (deleteTasks.length > 0) {
+        await Promise.all(deleteTasks);
+      }
+
+      status.current = 'success';
+      setContainers(newContainers);
+    };
+
+    const refresh = () => {
+      try {
+        const containersOrPromise = fetchContainers();
+
+        if (containersOrPromise instanceof Promise) {
+          const promise = containersOrPromise;
+
+          promise.then(_onSuccess).catch(_onError);
+
+          status.current = 'pending';
+          setPromiseOrError(containersOrPromise);
+        } else {
+          const newContainers = containersOrPromise;
+          _onSuccess(newContainers);
+        }
+      } catch (e) {
+        _onError(e);
+      }
     };
 
     useImperativeHandle(ref, () => {

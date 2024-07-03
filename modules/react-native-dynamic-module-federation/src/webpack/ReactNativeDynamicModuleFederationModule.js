@@ -6,11 +6,10 @@ const {
 const { RawSource } = require('webpack-sources');
 const Template = require('webpack/lib/Template');
 
-const RuntimeModule = require('webpack/lib/RuntimeModule');
-
 const SOURCE_TYPES = new Set(['javascript']);
 
 const DISPOSE_CONTAINER_KEY = 'disposeContainer';
+const DELETE_CACHE_FILE_KEY = 'deleteCacheFile';
 
 module.exports = class ReactNativeDynamicModuleFederationModule extends Module {
   constructor(name) {
@@ -83,7 +82,7 @@ module.exports = class ReactNativeDynamicModuleFederationModule extends Module {
         `${RuntimeGlobals.global}["${DISPOSE_CONTAINER_KEY}"] = {}`,
       ]),
       '}',
-      `${RuntimeGlobals.global}.${DISPOSE_CONTAINER_KEY}['${this.name}'] = function(deleteCacheFiles) {`,
+      `${RuntimeGlobals.global}.${DISPOSE_CONTAINER_KEY}['${this.name}'] = function() {`,
       Template.indent([
         `var webpackChunkKey = "webpackChunk${this.name}";`,
         'if (Array.isArray(self[webpackChunkKey]) && self[webpackChunkKey].length > 0) {',
@@ -92,18 +91,23 @@ module.exports = class ReactNativeDynamicModuleFederationModule extends Module {
         `if (${RuntimeGlobals.hasOwnProperty}(${RuntimeGlobals.global}, "${this.name}")) {`,
         Template.indent([`delete ${RuntimeGlobals.global}.${this.name};`]),
         '}',
-        'if (deleteCacheFiles) {',
+      ]),
+      '}',
+      `if (!${RuntimeGlobals.hasOwnProperty}(${RuntimeGlobals.global}, "${DELETE_CACHE_FILE_KEY}")) {`,
+      Template.indent([
+        `${RuntimeGlobals.global}["${DELETE_CACHE_FILE_KEY}"] = {}`,
+      ]),
+      '}',
+      `${RuntimeGlobals.global}.${DELETE_CACHE_FILE_KEY}['${this.name}'] = function() {`,
+      Template.indent([
+        `var chunkIds = ${JSON.stringify(chunkIds)}`,
+        'if (chunkIds.length > 0) {',
         Template.indent([
-          `var chunkIds = ${JSON.stringify(chunkIds)}`,
-          'if (chunkIds.length > 0) {',
-          Template.indent([
-            'return __webpack_require__.repack.shared.scriptManager.invalidateScripts(chunkIds) // @returns Promise<void>',
-          ]),
-          '}',
+          'return __webpack_require__.repack.shared.scriptManager.invalidateScripts(chunkIds) // @returns Promise<void>',
         ]),
         '}',
       ]),
-      '}\n',
+      '}',
     ]);
 
     sources.set('javascript', new RawSource(source));
