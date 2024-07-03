@@ -14,32 +14,28 @@ export function useDynamicModule<T = any>(
   const suspense = options?.suspense || false;
   const { containers } = useContext(Context);
 
-  const uri = useRef(containers?.[containerName]);
-
   const status = useRef<Status>('pending');
   const [promiseOrError, setPromiseOrError] = useState<any>();
   const [module, setModule] = useState<T>();
 
   useEffect(() => {
-    const newUri = containers?.[containerName];
-    if (newUri) {
-      if (uri.current !== newUri) {
-        uri.current = newUri;
-        const promise = Federated.importModule<T>(containerName, moduleName);
-        status.current = 'pending';
-        promise
-          .then((newModule) => {
-            status.current = 'success';
-            setModule(newModule);
-          })
-          .catch((e: any) => {
-            status.current = 'error';
-            setPromiseOrError(e);
-          });
-        setPromiseOrError(promise);
-      }
+    const uri = containers?.[containerName];
+    if (uri) {
+      const promise = Federated.importModule<T>(containerName, moduleName);
+      status.current = 'pending';
+      promise
+        .then((newModule) => {
+          status.current = 'success';
+          setModule(newModule);
+        })
+        .catch((e: any) => {
+          status.current = 'error';
+          setPromiseOrError(e);
+        });
+      setPromiseOrError(promise);
     }
-  }, [containers, containerName, moduleName]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [containers?.[containerName], moduleName]);
 
   if (suspense && status.current !== 'success' && promiseOrError && !module) {
     throw promiseOrError;
