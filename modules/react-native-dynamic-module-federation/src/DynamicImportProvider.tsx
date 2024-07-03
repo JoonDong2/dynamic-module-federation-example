@@ -101,7 +101,9 @@ export const DynamicImportProvider = forwardRef<
           }
         });
 
-        await Promise.all(promises);
+        if (promises.length > 0) {
+          await Promise.all(promises);
+        }
         setContainers(newContainers);
       };
 
