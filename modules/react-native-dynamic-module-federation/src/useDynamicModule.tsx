@@ -1,6 +1,7 @@
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Federated } from '@callstack/repack/client';
 import { Context } from './DynamicImportProvider';
+import DynamicModuleError from './DynamicModuleError';
 
 type Status = 'pending' | 'success' | 'error';
 
@@ -9,10 +10,16 @@ export function useDynamicModule<T = any>(
   moduleName: string,
   options?: {
     suspense?: boolean;
+    error?: {
+      throw?: boolean;
+      onError?: (e: Error) => void;
+    };
+    timeout?: number;
+    onTimeout?: () => void;
   }
-): { module?: T; isPending: boolean } {
+): { module?: T; isPending: boolean; isError: boolean } {
   const suspense = options?.suspense || false;
-  const { containers } = useContext(Context);
+  const { containers, delegateError } = useContext(Context);
 
   const status = useRef<Status>('pending');
   const [promiseOrError, setPromiseOrError] = useState<any>();
@@ -21,27 +28,59 @@ export function useDynamicModule<T = any>(
   useEffect(() => {
     const uri = containers?.[containerName];
     if (uri) {
-      const promise = Federated.importModule<T>(containerName, moduleName);
+      const promises: Promise<T>[] = [
+        Federated.importModule<T>(containerName, moduleName),
+      ];
+      if (options?.timeout) {
+        promises.push(
+          new Promise((_, reject) => {
+            setTimeout(() => {
+              reject(new Error('timeout'));
+            }, options.timeout);
+          })
+        );
+      }
+
       status.current = 'pending';
-      promise
+      const race = Promise.race(promises)
         .then((newModule) => {
           status.current = 'success';
           setModule(newModule);
         })
-        .catch((e: any) => {
+        .catch((e: Error) => {
           status.current = 'error';
+          const dynamicModuleError = new DynamicModuleError(
+            containerName,
+            moduleName,
+            e
+          );
+          options?.error?.onError?.(dynamicModuleError);
+          delegateError(dynamicModuleError);
           setPromiseOrError(e);
         });
-      setPromiseOrError(promise);
+      setPromiseOrError(race);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [containers?.[containerName], moduleName]);
 
-  if (suspense && status.current !== 'success' && promiseOrError && !module) {
+  if (suspense && status.current === 'pending' && promiseOrError && !module) {
     throw promiseOrError;
   }
 
-  return { module, isPending: status.current === 'pending' };
+  if (
+    options?.error?.throw &&
+    status.current === 'error' &&
+    promiseOrError &&
+    !module
+  ) {
+    throw promiseOrError;
+  }
+
+  return {
+    module,
+    isPending: status.current === 'pending',
+    isError: status.current === 'error',
+  };
 }
 
 export default useDynamicModule;

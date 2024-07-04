@@ -9,3 +9,4 @@ export {
 } from './createDynamicImport';
 export { default as useDynamicLazy } from './useDynamicLazy';
 export { default as useDynamicModule } from './useDynamicModule';
+export { default as DynamicModuleError } from './DynamicModuleError';

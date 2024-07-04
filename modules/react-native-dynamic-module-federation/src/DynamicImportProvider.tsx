@@ -6,6 +6,7 @@ import React, {
   useImperativeHandle,
   forwardRef,
   createContext,
+  type ErrorInfo,
 } from 'react';
 import {
   type ScriptLocatorResolver,
@@ -37,10 +38,12 @@ export interface Containers {
 
 interface ContextProps {
   containers?: Containers;
+  delegateError: (error: Error, errorInfo?: ErrorInfo) => void;
 }
 
 const initialContext: ContextProps = {
   containers: undefined,
+  delegateError: () => {},
 };
 
 export const Context: React.Context<ContextProps> =
@@ -50,6 +53,7 @@ export interface Props {
   fetchContainers: () => Containers | Promise<Containers>;
   deleteCacheFilesWhenRefresh?: boolean;
   suspense?: boolean;
+  onError?: (error: Error, errorInfo?: ErrorInfo) => void;
 }
 
 type Status = 'pending' | 'success' | 'error';
@@ -63,7 +67,13 @@ export const DynamicImportProvider = forwardRef<
   PropsWithChildren<Props>
 >(
   (
-    { children, fetchContainers, deleteCacheFilesWhenRefresh, suspense },
+    {
+      children,
+      fetchContainers,
+      deleteCacheFilesWhenRefresh,
+      suspense,
+      onError,
+    },
     ref
   ) => {
     const resolver = useRef<ScriptLocatorResolver>();
@@ -90,7 +100,11 @@ export const DynamicImportProvider = forwardRef<
       setPromiseOrError(e);
     };
 
-    const disposeContainer = (containerName: string) => {
+    const delegateError = (error: Error, errorInfo?: ErrorInfo) => {
+      onError?.(error, errorInfo);
+    };
+
+    const _disposeContainer = (containerName: string) => {
       global.disposeContainer?.[containerName]?.();
 
       if (!deleteCacheFilesWhenRefresh) return;
@@ -107,7 +121,7 @@ export const DynamicImportProvider = forwardRef<
 
       const deleteTasks: Promise<void>[] = [];
       difference.forEach((containerName) => {
-        const deleteTask = disposeContainer(containerName);
+        const deleteTask = _disposeContainer(containerName);
         if (deleteTask) {
           deleteTasks.push(deleteTask);
         }
@@ -164,7 +178,7 @@ export const DynamicImportProvider = forwardRef<
     }
 
     return (
-      <Context.Provider value={{ containers }}>
+      <Context.Provider value={{ containers, delegateError }}>
         <>{children}</>
       </Context.Provider>
     );

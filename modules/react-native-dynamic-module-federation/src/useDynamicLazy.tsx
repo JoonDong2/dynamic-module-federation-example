@@ -2,13 +2,13 @@ import React, {
   Suspense,
   useContext,
   useMemo,
-  useRef,
   type ErrorInfo,
   type ReactNode,
 } from 'react';
 import { Federated } from '@callstack/repack/client';
 import { Context } from './DynamicImportProvider';
 import { ErrorBoundary, type ErrorBoundaryProps } from 'react-error-boundary';
+import DynamicModuleError from './DynamicModuleError';
 
 const Null = () => null;
 
@@ -24,7 +24,7 @@ export function useDynamicLazy<P = any>(
     };
   }
 ): (props: P) => JSX.Element | null {
-  const { containers } = useContext(Context);
+  const { containers, delegateError } = useContext(Context);
 
   const Lazy = useMemo(() => {
     const uri = containers?.[containerName];
@@ -41,7 +41,7 @@ export function useDynamicLazy<P = any>(
                 if (typeof options?.suspenes?.onTimeout === 'function') {
                   options.suspenes.onTimeout();
                 }
-                reject(new Error('useDynamicLazy Timeout'));
+                reject(new Error('timeout'));
               }, options!.suspenes!.timeout);
             })
           );
@@ -61,7 +61,13 @@ export function useDynamicLazy<P = any>(
         }
         if (options?.error) {
           const onError = (error: Error, info: ErrorInfo) => {
-            options?.error?.onError?.(error, info);
+            const dynamicModuleError = new DynamicModuleError(
+              containerName,
+              moduleName,
+              error
+            );
+            delegateError(dynamicModuleError, info);
+            options?.error?.onError?.(dynamicModuleError, info);
           };
           component = (
             <ErrorBoundary {...options.error} onError={onError}>
