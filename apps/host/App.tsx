@@ -1,7 +1,10 @@
 import {QueryClient} from '@tanstack/react-query';
 import React from 'react';
 import {AppState, Button, Text, View} from 'react-native';
-import {createDynamicImport} from 'react-native-dynamic-module-federation';
+import {
+  DynamicImportManager,
+  DynamicImportProvider,
+} from 'react-native-dynamic-module-federation';
 import {
   hocPipe,
   withReactQuery,
@@ -15,10 +18,8 @@ import {ScriptManager} from '@callstack/repack/client';
 
 ScriptManager.shared.setMaxListeners(100); // 필요에 따라 알맞게 설정
 
-const DynamicImport = createDynamicImport({
+const manager = new DynamicImportManager({
   fetchContainers,
-  deleteCacheFilesWhenRefresh: false,
-  suspense: true,
 });
 
 let appState = AppState.currentState;
@@ -26,7 +27,7 @@ let appState = AppState.currentState;
 // inactive 무시
 AppState.addEventListener('change', nextAppState => {
   if (appState === 'background' && nextAppState === 'active') {
-    DynamicImport.refresh();
+    manager.refreshContainers();
   }
 
   appState = nextAppState;
@@ -35,9 +36,9 @@ AppState.addEventListener('change', nextAppState => {
 const App = () => {
   return (
     <>
-      <DynamicImport.Provider>
+      <DynamicImportProvider manager={manager} suspense>
         <Main />
-      </DynamicImport.Provider>
+      </DynamicImportProvider>
       <View
         style={{
           position: 'absolute',
@@ -47,7 +48,7 @@ const App = () => {
         <Button
           title="앱 업데이트"
           onPress={() => {
-            DynamicImport.refresh();
+            manager.refreshContainers();
           }}
         />
       </View>

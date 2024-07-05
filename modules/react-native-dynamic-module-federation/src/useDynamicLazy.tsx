@@ -1,14 +1,17 @@
 import React, {
   Suspense,
-  useContext,
   useMemo,
   type ErrorInfo,
   type ReactNode,
 } from 'react';
 import { Federated } from '@callstack/repack/client';
-import { Context } from './DynamicImportProvider';
+import {
+  useContainers,
+  useDynamicImportManager,
+} from './DynamicImportProvider';
 import { ErrorBoundary, type ErrorBoundaryProps } from 'react-error-boundary';
 import DynamicModuleError from './DynamicModuleError';
+import { OptionsSymbol } from './DynamicImportManager';
 
 const Null = () => null;
 
@@ -24,7 +27,8 @@ export function useDynamicLazy<P = any>(
     };
   }
 ): (props: P) => JSX.Element | null {
-  const { containers, delegateError } = useContext(Context);
+  const containers = useContainers();
+  const manager = useDynamicImportManager();
 
   const Lazy = useMemo(() => {
     const uri = containers?.[containerName];
@@ -66,7 +70,7 @@ export function useDynamicLazy<P = any>(
               moduleName,
               error
             );
-            delegateError(dynamicModuleError, info);
+            manager[OptionsSymbol].onError?.(dynamicModuleError, info);
             options?.error?.onError?.(dynamicModuleError, info);
           };
           component = (

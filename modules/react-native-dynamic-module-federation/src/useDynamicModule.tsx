@@ -1,7 +1,11 @@
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Federated } from '@callstack/repack/client';
-import { Context } from './DynamicImportProvider';
 import DynamicModuleError from './DynamicModuleError';
+import {
+  useContainers,
+  useDynamicImportManager,
+} from './DynamicImportProvider';
+import { OptionsSymbol } from './DynamicImportManager';
 
 type Status = 'pending' | 'success' | 'error';
 
@@ -19,7 +23,10 @@ export function useDynamicModule<T = any>(
   }
 ): { module?: T; isPending: boolean; isError: boolean } {
   const suspense = options?.suspense || false;
-  const { containers, delegateError } = useContext(Context);
+
+  const containers = useContainers();
+
+  const manager = useDynamicImportManager();
 
   const status = useRef<Status>('pending');
   const [promiseOrError, setPromiseOrError] = useState<any>();
@@ -55,7 +62,7 @@ export function useDynamicModule<T = any>(
             e
           );
           options?.error?.onError?.(dynamicModuleError);
-          delegateError(dynamicModuleError);
+          manager[OptionsSymbol].onError?.(dynamicModuleError);
           setPromiseOrError(e);
         });
       setPromiseOrError(race);
