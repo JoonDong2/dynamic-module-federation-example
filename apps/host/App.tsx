@@ -36,7 +36,7 @@ AppState.addEventListener('change', nextAppState => {
 const App = () => {
   return (
     <>
-      <DynamicImportProvider manager={manager} suspense>
+      <DynamicImportProvider manager={manager} suspense throwError>
         <Main />
       </DynamicImportProvider>
       <View

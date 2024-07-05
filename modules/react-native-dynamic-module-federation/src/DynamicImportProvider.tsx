@@ -50,10 +50,8 @@ const Context: React.Context<ContextProps> = createContext(initialContext);
 
 export interface Props {
   manager: DynamicImportManager;
-  // fetchContainers: () => Containers | Promise<Containers>;
-  // deleteCacheFilesWhenRefresh?: boolean;
   suspense?: boolean;
-  // onError?: (error: Error, errorInfo?: ErrorInfo) => void;
+  throwError?: boolean;
 }
 
 type Status = 'pending' | 'success' | 'error';
@@ -65,10 +63,8 @@ export interface DynamicImportProviderHandle {
 export const DynamicImportProvider = ({
   children,
   manager,
-  // fetchContainers,
-  // deleteCacheFilesWhenRefresh,
   suspense,
-  // onError,
+  throwError,
 }: PropsWithChildren<Props>) => {
   const resolver = useRef<ScriptLocatorResolver>();
 
@@ -153,10 +149,19 @@ export const DynamicImportProvider = ({
 
   if (
     suspense &&
-    status.current !== 'success' &&
+    status.current === 'pending' &&
     promiseOrError &&
     // containers가 있다면 Promise나 Error를 다시 던지지 않는다.
     // 필요하다면 useDynamicLazy/Module에서 던질 것이다.
+    !containers
+  ) {
+    throw promiseOrError;
+  }
+
+  if (
+    throwError &&
+    status.current === 'error' &&
+    promiseOrError &&
     !containers
   ) {
     throw promiseOrError;
