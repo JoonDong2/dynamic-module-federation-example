@@ -11,7 +11,7 @@ import {
 } from './DynamicImportProvider';
 import { ErrorBoundary, type ErrorBoundaryProps } from 'react-error-boundary';
 import DynamicModuleError from './DynamicModuleError';
-import { OptionsSymbol } from './DynamicImportManager';
+import { ErrorManagerSymbol } from './DynamicImportManager';
 
 const Null = () => null;
 
@@ -67,10 +67,10 @@ export function useDynamicLazy<P = any>(
           const onError = (error: Error, info: ErrorInfo) => {
             const dynamicModuleError = new DynamicModuleError(
               containerName,
-              moduleName,
+              uri,
               error
             );
-            manager[OptionsSymbol].onError?.(dynamicModuleError, info);
+            manager[ErrorManagerSymbol]?.onError(dynamicModuleError, info);
             options?.error?.onError?.(dynamicModuleError, info);
           };
           component = (

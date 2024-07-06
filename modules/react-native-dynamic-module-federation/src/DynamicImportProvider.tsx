@@ -12,7 +12,7 @@ import {
 } from '@callstack/repack/client';
 import { generateResolver } from './resolver';
 import getSymetricDifference from './getSymetricDifference';
-import type DynamicImportManager from './DynamicImportManager';
+import DynamicImportManager from './DynamicImportManager';
 import { OptionsSymbol, SettersSymbol } from './DynamicImportManager';
 
 declare global {
@@ -88,6 +88,7 @@ export const DynamicImportProvider = ({
   const onError = (e: any) => {
     status.current = 'error';
     setPromiseOrError(e);
+    return false;
   };
 
   const disposeContainer = (containerName: string) => {
@@ -118,16 +119,19 @@ export const DynamicImportProvider = ({
 
     status.current = 'success';
     setContainers(newContainers);
+
+    return true;
   };
 
   const refreshContainers = () => {
+    let result: Promise<boolean | undefined> | undefined;
     try {
       const containersOrPromise = manager[OptionsSymbol].fetchContainers();
 
       if (containersOrPromise instanceof Promise) {
         const promise = containersOrPromise;
 
-        promise.then(onSuccess).catch(onError);
+        result = promise.then(onSuccess).catch(onError);
 
         status.current = 'pending';
         setPromiseOrError(containersOrPromise);
@@ -138,9 +142,66 @@ export const DynamicImportProvider = ({
     } catch (e) {
       onError(e);
     }
+
+    return result;
+  };
+
+  const refreshContainer = async (containerName: string) => {
+    if (!containers) return false;
+
+    let uri = containers[containerName];
+
+    if (!uri) return false;
+
+    const maybePromise = disposeContainer(containerName);
+
+    if (maybePromise instanceof Promise) {
+      await maybePromise;
+    }
+
+    // 컨테이너를 지웠다가 다시 입력한다.
+    setContainers((prev) => {
+      if (!prev) return prev;
+      const fragmentedContainers = { ...prev };
+      delete fragmentedContainers[containerName];
+      updateResolver(fragmentedContainers);
+      return fragmentedContainers;
+    });
+
+    if (manager[OptionsSymbol].fetchContainer) {
+      let container: Containers | undefined;
+      try {
+        const maybePromise =
+          manager[OptionsSymbol].fetchContainer(containerName);
+        if (maybePromise instanceof Promise) {
+          container = await maybePromise;
+        }
+      } catch (e: any) {
+        // do nothing
+      }
+
+      const newUri = container?.[containerName];
+      if (container && newUri) {
+        uri = newUri;
+      }
+    }
+
+    // fetchContainer가 실패하더라도 이전 uri 복구
+    // 위의 setContainers와 다른 랜더링을 발생시키기 위해 setTimeout 이용 (for React 18)
+    setTimeout(() => {
+      setContainers((prev) => {
+        if (!prev) return prev;
+        const recoveredContainers = { ...prev, [containerName]: uri };
+        updateResolver(recoveredContainers);
+        return recoveredContainers;
+      });
+    });
+
+    return true;
   };
 
   manager[SettersSymbol].setRefreshContainers(refreshContainers);
+  manager[SettersSymbol].setRefreshContainer(refreshContainer);
 
   useEffect(() => {
     refreshContainers();

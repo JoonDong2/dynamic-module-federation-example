@@ -1,11 +1,11 @@
 class DynamicModuleError extends Error {
   containerName: string;
 
-  moduleName: string;
-
   origin?: Error;
 
-  constructor(containerName: string, moduleName: string, origin?: Error) {
+  uri?: string;
+
+  constructor(containerName: string, uri?: string, origin?: Error) {
     const stringifedOrigin = origin
       ? {
           name: origin.name,
@@ -15,12 +15,12 @@ class DynamicModuleError extends Error {
       : undefined;
 
     super(
-      `Dynamic Module Timeout: ${JSON.stringify({ containerName, moduleName, origin: stringifedOrigin })}`
+      `Dynamic Module Timeout: ${JSON.stringify({ containerName, origin: stringifedOrigin })}`
     );
 
     this.containerName = containerName;
-    this.moduleName = moduleName;
     this.origin = origin;
+    this.uri = uri;
   }
 }
 

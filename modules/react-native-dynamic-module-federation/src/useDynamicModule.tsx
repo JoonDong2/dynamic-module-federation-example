@@ -5,7 +5,7 @@ import {
   useContainers,
   useDynamicImportManager,
 } from './DynamicImportProvider';
-import { OptionsSymbol } from './DynamicImportManager';
+import { ErrorManagerSymbol } from './DynamicImportManager';
 
 type Status = 'pending' | 'success' | 'error';
 
@@ -58,11 +58,11 @@ export function useDynamicModule<T = any>(
           status.current = 'error';
           const dynamicModuleError = new DynamicModuleError(
             containerName,
-            moduleName,
+            uri,
             e
           );
           options?.error?.onError?.(dynamicModuleError);
-          manager[OptionsSymbol].onError?.(dynamicModuleError);
+          manager[ErrorManagerSymbol]?.onError?.(dynamicModuleError);
           setPromiseOrError(e);
         });
       setPromiseOrError(race);
