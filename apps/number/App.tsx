@@ -1,6 +1,8 @@
 import React from 'react';
 import Stack from './src/Stack';
 import {
+  ErrorManager,
+  fetchContainer,
   fetchContainers,
   hocPipe,
   withErrorBoundary,
@@ -18,6 +20,8 @@ ScriptManager.shared.setMaxListeners(100); // 필요에 따라 알맞게 설정
 
 const manager = new DynamicImportManager({
   fetchContainers,
+  fetchContainer,
+  errorManager: ErrorManager,
 });
 
 let appState = AppState.currentState;

@@ -7,6 +7,8 @@ import {
   withReactNavigation,
   withSuspense,
   fetchContainers,
+  fetchContainer,
+  ErrorManager,
 } from 'shared';
 import {QueryClient} from '@tanstack/react-query';
 import {AppState, Text} from 'react-native';
@@ -20,6 +22,8 @@ ScriptManager.shared.setMaxListeners(100); // 필요에 따라 알맞게 설정
 
 const manager = new DynamicImportManager({
   fetchContainers,
+  fetchContainer,
+  errorManager: ErrorManager,
 });
 
 let appState = AppState.currentState;
