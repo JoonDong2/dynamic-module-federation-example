@@ -9,8 +9,10 @@ const Main = () => {
     },
     suspenes: {
       fallback: <Text>Main 로딩중</Text>,
+      timeout: 1000,
     },
   });
+
   return <Entry />;
 };
 

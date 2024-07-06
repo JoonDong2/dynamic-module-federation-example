@@ -13,6 +13,7 @@ const Tab = () => {
     },
     suspenes: {
       fallback: <Text>Alphabet Main 로딩중</Text>,
+      timeout: 1000,
     },
   });
 
@@ -22,6 +23,7 @@ const Tab = () => {
     },
     suspenes: {
       fallback: <Text>Number Main 로딩중</Text>,
+      timeout: 1000,
     },
   });
 

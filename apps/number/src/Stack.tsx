@@ -23,6 +23,7 @@ const Stack = () => {
       },
       suspenes: {
         fallback: <Text>Alphabet Detail 로딩중</Text>,
+        timeout: 1000,
       },
     },
   );
