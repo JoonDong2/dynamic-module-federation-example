@@ -21,7 +21,7 @@ const Stack = () => {
       },
       suspenes: {
         fallback: <Text>Alphabet Detail 로딩중</Text>,
-        timeout: 1000,
+        timeout: 3000,
       },
     },
   );
@@ -32,7 +32,7 @@ const Stack = () => {
     },
     suspenes: {
       fallback: <Text>Number Detail 로딩중</Text>,
-      timeout: 1000,
+      timeout: 3000,
     },
   });
 
