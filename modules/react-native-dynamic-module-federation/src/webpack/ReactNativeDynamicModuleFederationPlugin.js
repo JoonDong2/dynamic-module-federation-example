@@ -1,8 +1,14 @@
-const ContainerEntryDependency = require("webpack/lib/container/ContainerEntryDependency");
-const ContainerExposedDependency = require("webpack/lib/container/ContainerExposedDependency");
-const ReactNativeDynamicModuleFederationModuleFactory = require("./ReactNativeDynamicModuleFederationModuleFactory");
+const { Dependency } = require('webpack');
+const ReactNativeDynamicModuleFederationModuleFactory = require('./ReactNativeDynamicModuleFederationModuleFactory');
 
-const PLUGIN_NAME = "ReactDynamicModuleFederationPlugin";
+const PLUGIN_NAME = 'ReactDynamicModuleFederationPlugin';
+
+class ReactNativeDynamicModuleFederationDependency extends Dependency {
+  constructor(name) {
+    super();
+    this.name = name;
+  }
+}
 
 class ReactNativeDynamicModuleFederationPlugin {
   constructor(options) {
@@ -11,28 +17,26 @@ class ReactNativeDynamicModuleFederationPlugin {
 
   apply(compiler) {
     const { name } = this.options;
-    compiler.hooks.make.tapAsync(PLUGIN_NAME, (compilation, callback) => {
-      const dep = new ContainerEntryDependency(name);
-      dep.loc = { name };
-      compilation.addEntry(compilation.options.context, dep, {}, (error) => {
-        if (error) return callback(error);
-        callback();
-      });
+    compiler.hooks.thisCompilation.tap(PLUGIN_NAME, (compilation) => {
+      compilation.dependencyFactories.set(
+        ReactNativeDynamicModuleFederationDependency,
+        new ReactNativeDynamicModuleFederationModuleFactory()
+      );
     });
 
-    compiler.hooks.thisCompilation.tap(
-      PLUGIN_NAME,
-      (compilation, { normalModuleFactory }) => {
-        compilation.dependencyFactories.set(
-          ContainerEntryDependency,
-          new ReactNativeDynamicModuleFederationModuleFactory()
-        );
-        compilation.dependencyFactories.set(
-          ContainerExposedDependency,
-          normalModuleFactory
-        );
-      }
-    );
+    compiler.hooks.make.tapAsync(PLUGIN_NAME, (compilation, callback) => {
+      const dep = new ReactNativeDynamicModuleFederationDependency(name);
+      dep.loc = { name };
+      compilation.addEntry(
+        compilation.options.context,
+        dep,
+        { filename: `${name}.container.bundle` },
+        (error) => {
+          if (error) return callback(error);
+          callback();
+        }
+      );
+    });
   }
 }
 
