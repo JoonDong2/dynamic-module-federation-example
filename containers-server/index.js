@@ -46,7 +46,7 @@ app.get(
             const versions = await fs.getFolders(`${containersPath}/${remote}`);
             const maxVersion = version.max(versions);
             if (!maxVersion) return undefined;
-            return [remote, `${groupPath}/${remote}/${maxVersion}`];
+            return [remote, maxVersion];
           })
         )
       ).filter((entry) => !!entry)

@@ -26,10 +26,10 @@ export const fetchContainers = async (): Promise<any> => {
 
   const res = await fetch(`${CONTAINERS_SERVER_URI}?${queryString}`);
   const containers = Object.fromEntries(
-    Object.entries(await res.json()).map(([containerName, path]) => {
+    Object.entries(await res.json()).map(([containerName, version]) => {
       return [
         containerName,
-        `http://${getLocalhost()}:4000/${path}/[name][ext]`,
+        `http://${getLocalhost()}:4000/${Config.NATIVE_VERSION}/${Platform.OS}/${Config.ENV}/${containerName}/${version}/[name][ext]`,
       ];
     })
   );
