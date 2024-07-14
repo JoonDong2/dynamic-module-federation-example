@@ -76,16 +76,17 @@ app.post(
 );
 
 app.get(
-  "/version/:name",
+  "/container/:name",
   ...validateContainers(),
   handleError(async (req, res) => {
     const query = req.query;
+    const containerName = req.params.name;
     const groupPath = PATH_FOR_GROUPING.map((key) => query[key]).join("/");
-    const containerPath = `${DEPLOYMENTS_PATH}/${groupPath}/${req.params.name}`;
+    const containerPath = `${DEPLOYMENTS_PATH}/${groupPath}/${containerName}`;
     const versions = await fs.getFolders(containerPath);
 
     res.json({
-      version: version.max(versions),
+      [containerName]: version.max(versions),
     });
   })
 );

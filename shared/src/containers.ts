@@ -8,7 +8,9 @@ const getDevContainers = () => ({
   app2: `http://${getLocalhost()}:9002/[name][ext]`,
 });
 
-const CONTAINERS_SERVER_URI = `http://${getLocalhost()}:4000/containers`;
+const SERVER_URI = `http://${getLocalhost()}:4000/`;
+const CONTAINER_SERVER_URI = SERVER_URI + 'container';
+const CONTAINERS_SERVER_URI = SERVER_URI + 'containers';
 
 export const fetchContainers = async (): Promise<any> => {
   if (Config.ENV === 'development') {
@@ -47,7 +49,7 @@ export const fetchContainer = async (containerName: string): Promise<any> => {
   const queryString = new URLSearchParams(params).toString();
 
   const res = await fetch(
-    `${CONTAINERS_SERVER_URI}?${queryString}/${containerName}`
+    `${CONTAINER_SERVER_URI}/${containerName}?${queryString}`
   );
 
   const container = await res.json();
@@ -59,7 +61,7 @@ export const fetchContainer = async (containerName: string): Promise<any> => {
   }
 
   return {
-    [containerName]: `http://${getLocalhost()}:4000/${container[containerName]}/[name][ext]`,
+    [containerName]: `http://${getLocalhost()}:4000/${Config.NATIVE_VERSION}/${Platform.OS}/${Config.ENV}/${containerName}/${container[containerName]}/[name][ext]`,
   };
 };
 

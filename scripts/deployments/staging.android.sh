@@ -27,8 +27,10 @@ PACKAGE_JSON="$ROOT/package.json"
 
 NAME=$(grep '"name"' "$PACKAGE_JSON" | awk -F '"' '{print $4}')
 
-RESPONSE=$(curl -s "localhost:4000/version/$NAME?native_version=$NATIVE_VERSION&os=android&env=staging")
-LAST_VERSION=$(echo $RESPONSE | grep -o '"version":[^,}]*' | cut -d':' -f2 | sed 's/"//g' | tr -d '[:space:]')
+RESPONSE=$(curl -s "localhost:4000/container/$NAME?native_version=$NATIVE_VERSION&os=android&env=staging")
+LAST_VERSION=$(echo $RESPONSE | grep -o "\"$NAME\":[^,}]*" | cut -d':' -f2 | sed 's/"//g' | tr -d '[:space:]')
+
+echo "hi $LAST_VERSION"
 
 if [ -z "$LAST_VERSION" ]; then
   LAST_VERSION="0.0.0"
