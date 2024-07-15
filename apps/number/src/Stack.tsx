@@ -6,6 +6,8 @@ import Main from './screens/Main';
 import {useDynamicLazy} from 'react-native-dynamic-module-federation';
 import {Text} from 'react-native';
 
+export const hello = 'hello';
+
 export const StackNavigator = createStackNavigator<
   RootStackParamList & {
     'number:Main': undefined;

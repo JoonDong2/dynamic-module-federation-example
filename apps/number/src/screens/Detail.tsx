@@ -30,6 +30,18 @@ const Detail = () => {
           <Text>{`related char: ${relatedChar}`}</Text>
         </Pressable>
       )}
+      <Pressable
+        onPress={() => {
+          navigation.push('number:Test1');
+        }}>
+        <Text>Test1</Text>
+      </Pressable>
+      <Pressable
+        onPress={() => {
+          navigation.push('number:Test2');
+        }}>
+        <Text>Test2</Text>
+      </Pressable>
     </View>
   );
 };

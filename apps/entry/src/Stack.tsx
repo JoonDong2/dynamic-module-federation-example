@@ -2,7 +2,10 @@ import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 import Tab from './Tab';
 import {RootStackParamList} from 'shared/navigation';
-import {useDynamicLazy} from 'react-native-dynamic-module-federation';
+import {
+  useDynamicLazy,
+  useDynamicModule,
+} from 'react-native-dynamic-module-federation';
 import {Text} from 'react-native';
 
 const StackNavigator = createStackNavigator<
@@ -45,6 +48,10 @@ const Stack = () => {
   //   },
   // });
 
+  // 비추천
+  const {module} = useDynamicModule('number', './number/screens/TestGroup');
+  const NumberGroup = module?.default;
+
   return (
     <StackNavigator.Navigator screenOptions={{headerShown: false}}>
       <StackNavigator.Screen name="Tab" component={Tab} />
@@ -53,6 +60,7 @@ const Stack = () => {
         component={AlphabetDetail}
       />
       <StackNavigator.Screen name="number:Detail" component={NumberDetail} />
+      {NumberGroup}
       {/* <StackNavigator.Screen name="emoji:Detail" component={EmojiDetail} /> */}
     </StackNavigator.Navigator>
   );
