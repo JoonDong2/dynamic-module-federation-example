@@ -30,7 +30,7 @@ NAME=$(grep '"name"' "$PACKAGE_JSON" | awk -F '"' '{print $4}')
 RESPONSE=$(curl -s "localhost:4000/container/$NAME?native_version=$NATIVE_VERSION&os=android&env=staging")
 LAST_VERSION=$(echo $RESPONSE | grep -o "\"$NAME\":[^,}]*" | cut -d':' -f2 | sed 's/"//g' | tr -d '[:space:]')
 
-echo "hi $LAST_VERSION"
+echo "현재 최신 버전: $LAST_VERSION"
 
 if [ -z "$LAST_VERSION" ]; then
   LAST_VERSION="0.0.0"
@@ -48,7 +48,7 @@ DEFAULT_VERSION="${version_parts[0]}.${version_parts[1]}.${version_parts[2]}"
 VERSION=$DEFAULT_VERSION
 
 if ! [[ $AUTO =~ "auto" ]]; then
-  read -p "버전 ${DEFAULT_VERSION} 맞으면 엔터, 아니면 다른 버전 입력:" VERSION
+  read -p "배포할 버전 ${DEFAULT_VERSION} 맞으면 엔터, 아니면 다른 버전 입력:" VERSION
 fi
 
 if [ -z "$VERSION" ]; then
