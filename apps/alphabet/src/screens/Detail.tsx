@@ -4,6 +4,7 @@ import data from '../data';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {NavigationProp, RouteProp} from 'shared/navigation';
 import {ID_COLOR} from '../constants';
+import {useDynamicModule} from 'react-native-dynamic-module-federation';
 
 const Detail = () => {
   const navigation = useNavigation<NavigationProp<'alphabet:Main'>>();
@@ -12,6 +13,13 @@ const Detail = () => {
   const relatedNumber = useMemo(() => {
     return data.findIndex(c => c === char);
   }, [char]);
+
+  const {module} = useDynamicModule<{alertNumber: (number: number) => void}>(
+    'number',
+    './number/utils',
+  );
+  const alertNumber = module?.alertNumber;
+
   return (
     <View
       style={{
@@ -30,6 +38,15 @@ const Detail = () => {
           }}
           style={{alignItems: 'center'}}>
           <Text>{`related number: ${relatedNumber}`}</Text>
+        </Pressable>
+      )}
+      {relatedNumber !== -1 && (
+        <Pressable
+          onPress={() => {
+            alertNumber?.(relatedNumber);
+          }}
+          style={{alignItems: 'center'}}>
+          <Text>{`alert number: ${relatedNumber}`}</Text>
         </Pressable>
       )}
     </View>

@@ -235,6 +235,7 @@ export default (env) => {
         exposes: {
           './number/screens/Main': './src/screens/Main',
           './number/screens/Detail': './src/screens/Detail',
+          './number/utils': './src/utils'
         },
       }),
       new ReactNativeDynamicModuleFederationPlugin({name}),
