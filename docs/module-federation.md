@@ -1,6 +1,6 @@
 # Module Federation
 
-코드를 일일이 설명하면 저도 힘들고 보는 사람도 힘들기 때문에, 간단한 예제로 **전반적인 실행 흐름과 그 사이의 중요한 로직 위주**로 설명하겠습니다.
+[`dynamic-module-federation-example`](../README.md) 프로젝트를 진행하는 과정에서 `Module Federation`을 분석해서 흐름을 간단히 정리했습니다.
 
 ## 목차
 
@@ -61,6 +61,10 @@ import("app2/sayHello").then(({ sayHello }) => {
 
 > 예를 들어, 예제 코드에서 `app2`는 `remoteEntry.js` 파일과 `sayHello.js`의 번들링 파일인 `src_sayHello_js.js` 파일로 번들링됩니다.
 
+그리고 어떤 앱에 모듈을 요청할 때는 해당 앱의 **`remoteEntry.js`를 로드하는 것부터 시작**합니다.
+
+<a name="entry-object"></a>
+
 각 앱의 `remoteEntry.js` 파일은 실행되면, `global`에 다음과 같은 해당 앱의 `엔트리 객체`를 생성합니다.
 
 ```
@@ -72,9 +76,7 @@ import("app2/sayHello").then(({ sayHello }) => {
 
 > 예를 들어, 예제 코드에서 `app2`는 `global['app2']`에 `{get: ..., init: ...}` 객체를 생성합니다.
 
-그리고 어떤 앱에 모듈을 요청할 때는 해당 앱의 **`remoteEntry.js`를 로드하는 것부터 시작**합니다.
-
-어떤 앱에 대한 모든 요청은 해당 앱의 엔트리 객체의 `get` 메서드를 통해 이루어집니다.
+그리고 어떤 앱에 대한 모든 요청은 해당 앱의 엔트리 객체의 `get` 메서드를 통해 이루어집니다.
 
 `init` 메서드는 엔트리 객체의 내부 데이터를 초기화하기 위해 사용됩니다.
 
@@ -104,6 +106,8 @@ import("app2/sayHello").then(({ sayHello }) => {
 
 `__webpack_modules__`는 키가 모듈 `ID`이고 값이 해당 **모듈 객체를 생성**하는 모듈 `Resolver`인 객체입니다.
 
+<a name="module-resolver"></a>
+
 `__webpack_modules__`에는 앱에서 사용하는 모든 모듈의 `Resolver`가 저장됩니다.
 
 > `Resolver`는 모듈 객체를 생성하는 함수입니다.
@@ -124,7 +128,7 @@ import("app2/sayHello").then(({ sayHello }) => {
 
 ```
 (self["webpackChunkapp2"] = self["webpackChunkapp2"] || [])
-.push( // remoteEntry.js에서 오버로드
+.push( // remoteEntry.js에서 오버라이드
   [
     ["src_sayHello_js"], // 파일 ID
     {∂
@@ -149,9 +153,11 @@ import("app2/sayHello").then(({ sayHello }) => {
 );
 ```
 
-좀 복잡해 보이는데, `청크 ID`와 `{ 모듈 ID: 모듈 Resolver }`로 구성된 배열입니다.
+좀 복잡해 보이는데, `파일 ID`와 `{ 모듈 ID: 모듈 Resolver }`로 구성된 배열입니다.
 
-해당 배열을 `self["webpackChunkapp2"].push`에 넣어 실행하면 모듈 `Resolver`가 `__webpack_modules__`에도 입력되는데, 이것은 `remoteEntry.js`에서 `self["webpackChunkapp2"].push` 메서드를 오버로드했기 때문입니다.
+해당 배열을 `self["webpackChunkapp2"].push`에 넣어 실행하면 모듈 `Resolver`가 `__webpack_modules__`에도 입력되는데, 이것은 `remoteEntry.js`에서 `self["webpackChunkapp2"].push` 메서드를 오버라이드했기 때문입니다.
+
+<a name="webpackjsonpcallback"></a>
 
 ```
 (() => {
@@ -183,7 +189,7 @@ import("app2/sayHello").then(({ sayHello }) => {
   // 이 부분 때문에, container를 지우기 위해서 global[app]뿐만 아니라, chunkLoadingGlobal을 초기화해 주어야 한다.
   chunkLoadingGlobal.forEach(webpackJsonpCallback.bind(null, 0));
 
-  // self["webpackChunkapp2"].push 오버로드
+  // self["webpackChunkapp2"].push 오버라이드
   // bind의 첫 번째 매개변수에 원본 push 보존
   chunkLoadingGlobal.push = webpackJsonpCallback.bind(null, chunkLoadingGlobal.push.bind(chunkLoadingGlobal));
 })();
@@ -203,7 +209,7 @@ import("app2/sayHello").then(({ sayHello }) => {
 
 결론적으로 빌드할 때 분리되었던 모듈이, 필요에 따라 `remoteEntry.js`의 `__webpack_module_cache__`로 다시 모이는 구조입니다.
 
-> 각 앱이 다른 앱의 모듈을 얻기 위해 사용하는 정보(`모듈 ID`, `파일 ID`, r`emoteEntry.js` 주소) 등은 `Module Federation` 설정값, 번들링 규칙을 통해 하드코딩되어 컴파일됩니다.
+> 각 앱이 다른 앱의 모듈을 얻기 위해 사용하는 정보(`모듈 ID`, `파일 ID`, `remoteEntry.js` 주소) 등은 `Module Federation` 설정값, 번들링 규칙을 통해 하드코딩되어 컴파일됩니다.
 
 ## 마치며
 
@@ -213,7 +219,7 @@ import("app2/sayHello").then(({ sayHello }) => {
 
 > 모바일에선 `remoteEntry.js` 파일 이름 대신 `${앱이름}.container.bundle`이 사용됩니다.
 
-저는 [`react-native-dynamic-module-fedration`](./react-native-dynamic-module-federation.md) 라이브러리를 만들 때, 기존에 로드된 앱을 삭제하고, 새로 로드하기 위해 어떤 부분을 변경해야 하는지 알아야 했기에 일일이 분석했지만, 그렇지 않다면 너무 복잡하기 때문에, 중요하다고 생각하는 부분만 그림으로 위주로 설명했습니다.
+저는 <a href="https://github.com/JoonDong2/dynamic-module-federation-example" target="_blank">`dynamic-module-federation-example`</a> 프로젝트를 진행하기 위해 기존에 로드된 앱을 삭제하고, 새로 로드하기 위해 어떤 부분을 변경해야 하는지 알아야 했기에 일일이 분석했지만, 그렇지 않다면 너무 복잡하기 때문에, 중요하다고 생각하는 부분만 그림으로 위주로 설명했습니다.
 
 좀 더 상세한 내용은 실제 번들링된 파일을 직접 분석해 보거나, 아래 링크를 참조해 보면 좋을 것 같습니다.
 

@@ -179,7 +179,7 @@ AppState.addEventListener('change', nextAppState => {
 
 ## 마치며
 
-해당 프로젝트를 완료하기 위해 필요했던 [`Module Federation`](./docs/module-federation.md), [`repack`](./docs/repack.md) 분석과 [`react-native-dynamic-module-federation`](./docs/react-native-dynamic-module-federation.md) 구현에 대한 내용은 내용이 너무 많아 다른 페이지로 분리했습니다.
+해당 프로젝트를 완료하기 위해 필요했던 [`Module Federation`](https://velog.io/@joondong2/Module-Federation-%EB%B6%84%EC%84%9D), [`repack`](https://velog.io/@joondong2/repack%EA%B3%BC-Module-Federation) 분석과 [`react-native-dynamic-module-federation`](./docs/react-native-dynamic-module-federation.md) 구현에 대한 내용은 내용이 너무 많아 다른 페이지로 분리했습니다.
 
 보통 어떤 라이브러리를 사용할 때 내부 코드까지 분석하지는 않지만, **앱의 기반이 되는 방법의 도입 여부를 결정할 때**는 내부 동작까지 알아야 할 것 같아 꽤 상세하게 분석했습니다.
 

@@ -2,7 +2,7 @@
 
 원래 **리액트 네이티브는 자체 번들러를 사용**했기 때문에, **개발자가 개입할 수 있는 방법이 제한적**이었습니다.
 
-그런데 `callstack` 팀에서 리액트 네이티브를 위한 `webpack`인 [`repack`](https://re-pack.dev/)과 리액트 네이티브를 위해 약간 수정된 [`Module Federation`](./module-federation.md) 플러그인까지 개발해 주었습니다.
+그런데 `callstack` 팀에서 리액트 네이티브를 위한 `webpack`인 [`repack`](https://re-pack.dev/)과 리액트 네이티브를 위해 약간 수정된 [`Module Federation`](https://velog.io/@joondong2/Module-Federation-%EB%B6%84%EC%84%9D) 플러그인까지 개발해 주었습니다.
 
 ## 목차
 
@@ -20,7 +20,7 @@
 
 ### Federated.importModule
 
-오리지널(브라우저용) `Module Federation`에선 외부 모듈을 가져올 때 [`import` 표현식](./module-federation.md#app1indexjs)을 썼습니다.
+오리지널(브라우저용) `Module Federation`에선 외부 모듈을 가져올 때 [`import` 표현식](https://velog.io/@joondong2/Module-Federation-%EB%B6%84%EC%84%9D#app1indexjs)을 썼습니다.
 
 `repack`에서 제공하는 리액트 네이티브용 `Module Federation` 플러그인으로 빌드된 앱에서는 `Federated.importModule`를 사용해서 로드합니다.
 
@@ -101,7 +101,9 @@ export async function importModule<Exports = any>(
 }
 ```
 
-코드를 보면 오리지널 [`Module Federation`이 `import` 표현식을 컴파일한 결과](./module-federation.md#import-summary)와 동일하게 동작합니다.
+<a name="name"></a>
+
+코드를 보면 오리지널 [`Module Federation`이 `import` 표현식을 컴파일한 결과](https://velog.io/@joondong2/Module-Federation-%EB%B6%84%EC%84%9Dimport-summary)와 동일하게 동작합니다.
 
 즉, 컴파일된 함수를 미리 제공할 뿐이지, **오리지널과 다를게 없습니다.**
 
@@ -109,7 +111,7 @@ export async function importModule<Exports = any>(
 
 여기에 `Federated.importModule`은 한 가지 특별한 기능을 제공합니다.
 
-일반적으로 브라우저 환경에서 [다른 앱의 remoteEntry.js 주소는 Module Federation 플러그인 설정에서 정적으로 정의](https://webpack.js.org/concepts/module-federation/#promise-based-dynamic-remotes)하고, 각 앱의 번들링 파일에 다른 앱의 **`remoteEntry.js`의 주소가 하드코딩되어 컴파일**됩니다.
+일반적으로 브라우저 환경에서 [다른 앱의 `remoteEntry.js` 주소는 `Module Federation` 플러그인 설정에서 정적으로 정의](https://webpack.js.org/concepts/module-federation/#promise-based-dynamic-remotes)하고, 각 앱의 번들링 파일에 다른 앱의 **`remoteEntry.js`의 주소가 하드코딩되어 컴파일**됩니다.
 
 하지만 `Federated.importModule`은 [`ScriptManager.shared.loadScript`](https://github.com/callstack/repack/blob/main/packages/repack/src/modules/ScriptManager/ScriptManager.ts#L336)에서 **`Resolver`를 통해 스크립트의 위치를 동적으로 결정할 수 있는 기회를 제공**합니다.
 
@@ -125,6 +127,8 @@ async loadScript(
   // ...
 }
 ```
+
+<a name="script-resolver"></a>
 
 [`Resolver`는 개발자가 직접 등록하고 해제](https://re-pack.dev/docs/module-federation#dynamic-containers-with-federatedimportmodule)할 수 있습니다.
 
@@ -166,13 +170,15 @@ ScriptManager.shared.addResolver(async (scriptId, caller) => {
 
 리액트 네이티브 앱은 자바스크립트로만 동작하지 않습니다.
 
-**자바스크립트로 네이티브 뷰, 모듈을 제어**합니다.
+**`react-native` 모듈은 자바스크립트로 네이티브 뷰, 모듈을 제어**합니다.
 
-그리고 네이티브 코드는 스크립트 언어가 아니기 때문에, 동적으로 변경하는 것은 거의 불가능합니다.
+그리고 네이티브 코드(코틀린, 스위프트)는 스크립트 언어가 아니기 때문에, 동적으로 변경하는 것은 거의 불가능합니다.
 
 따라서 네이티브 뷰, 모듈을 초기화하고 리액트 네이티브와 연동하는 코드는 설치되는 앱 내부에 있어야 합니다.
 
-즉, **네이티브 라이브러리는 `Host`에 포함되어 초기화되고, [다른 앱을 초기화할 때 공유](./module-federation.md#import-summary)되어야** 합니다.
+즉, **네이티브 라이브러리는 `Host`에 포함되어 초기화되고, [다른 앱을 초기화할 때 공유](https://velog.io/@joondong2/Module-Federation-%EB%B6%84%EC%84%9D#import-summary)되어야** 합니다.
+
+`react`는 네이티브 라이브러리는 아니지만, 리액트 네이티브 앱을 시작하기 위해선 `react-native`의 `AppRegistry.registerComponent` 메서드로 즉시 앱 컴포넌트를 등록해야 하는데, 동기적으로 앱 컴포넌트를 만들기 위해 `eager:true`로 설정해야 합니다.
 
 #### 제약
 
@@ -194,11 +200,11 @@ ScriptManager.shared.addResolver(async (scriptId, caller) => {
 
 **이 부분은 공식 문서와 다릅니다.**
 
-`eager`는 `true`로 설정되면, 사전적 의미 그대로 모듈이 필요할 때 로드되는 것이 아니라, `remoteEntry.js`에 내장되어 `즉시` [로드(`__webpack_modules__`에 포함시키는 동작)](./module-federation.md#import-detail)됩니다.
+`eager`는 `true`로 설정되면, 사전적 의미 그대로 모듈이 필요할 때 로드되는 것이 아니라, `remoteEntry.js`에 내장되어 `즉시` [로드(`__webpack_modules__`에 포함시키는 동작)](https://velog.io/@joondong2/Module-Federation-%EB%B6%84%EC%84%9D#import-detail)됩니다.
 
 공식 문서에서는 [`react`와 `react-native`의 `eager`를 `true`로 설정해야 한다](https://re-pack.dev/docs/module-federation#react-and-react-native-must-be-eager-and-singleton)고 명시되어 있습니다.
 
-하지만 [`Module Fedeation`으로 빌드된 코드를 분석](./module-federation.md)했을 땐, `Host`애서만 `true`로 설정하면 되고, 나머지 앱은 `false`로 설정해도 무방해 보였습니다.
+하지만 `Module Fedeation`으로 빌드된 코드를 분석했을 땐, `Host`애서만 `true`로 설정하면 되고, 나머지 앱은 `false`로 설정해도 무방해 보였습니다.
 
 [이것 때문에 `repack issue`에 질문](https://github.com/callstack/repack/issues/462)을 올렸는데, `repack` 개발자도 기존 라이브러리를 네이티브에서 작동하도록 설정 정도만 바꾼 것에 불과하기 때문인지, **명확한 답변을 하지 못했습니다.**
 

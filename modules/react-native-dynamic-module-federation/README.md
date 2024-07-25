@@ -1,5 +1,30 @@
 # react-native-dynamic-module-federation
 
+## ReactNativeDynamicModuleFederationPlugin
+
+[`ModuleFederationPlugin`에 입력한 `name` 속성만 동일하게 입력](../apps/number/webpack.config.mjs#L233-L241)해 주면 됩니다.
+
+```
+// webpack.config.js
+import packageJson from './package.json' with { type: "json" };
+
+const {name} = packageJson
+
+export default () => {
+  return {
+    // ...
+    plugins: [
+      // ...
+      new Repack.plugins.ModuleFederationPlugin({
+        name,
+        // ...
+      }),
+      new ReactNativeDynamicModuleFederationPlugin({name}),
+    ]
+  }
+}
+```
+
 ### DinamicImportProvider
 
 `fetchContainers` 함수를 외부에서 입력받고, 해당 함수를 사용하여 `containers` 정보를 사용하여 `@callstack/reapck/client.ScriptManager`의 `resolver`를 만들고 등록합니다.
