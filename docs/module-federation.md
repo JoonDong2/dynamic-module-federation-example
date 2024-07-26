@@ -1,6 +1,6 @@
 # Module Federation
 
-[`dynamic-module-federation-example`](../README.md) 프로젝트를 진행하는 과정에서 `Module Federation`을 분석해서 흐름을 간단히 정리했습니다.
+코드를 일일이 설명하면 저도 힘들고 보는 사람도 힘들기 때문에, 간단한 예제로 **전반적인 실행 흐름과 그 사이의 중요한 로직 위주**로 설명하겠습니다.
 
 ## 목차
 
