@@ -62,17 +62,17 @@ __webpack_require__.l = (url, done, key) => {
 
 리액트 네이트브에서 제공하는 **특별한 방법을 사용하여 스크립트를 로드해야** 합니다.
 
-> 각 네이티브의 자바스크립트 런타임 객체의 `evaluateJavaScript` 메서드를 사용하여 로드([iOS](https://github.com/callstack/repack/blob/main/packages/repack/ios/ScriptManager.mm#L299), [안드로이드](https://github.com/callstack/repack/blob/main/packages/repack/android/src/main/cpp/NativeScriptLoader.cpp#L44))합니다.
+> 각 네이티브의 자바스크립트 런타임 객체(C++)의 `evaluateJavaScript` 메서드를 사용하여 로드([iOS](https://github.com/callstack/repack/blob/main/packages/repack/ios/ScriptManager.mm#L299), [안드로이드](https://github.com/callstack/repack/blob/main/packages/repack/android/src/main/cpp/NativeScriptLoader.cpp#L44))합니다.
 >
-> 자바스크립트 런타임 객체는 안드로이드에선 [`ApplicationContext` 객체로 부터 생성](https://github.com/callstack/repack/blob/main/packages/repack/android/src/main/java/com/callstack/repack/ScriptManagerPackage.kt#L10)할 수 있습니다.
+> 자바스크립트 런타임 객체는 안드로이드에선 `ApplicationContext` 객체에서 CatalystInstance 객체를 얻어와 접근할 수 있습니다.
 >
-> iOS에선 [`Bridge`로 부터 얻어올 수 있습니다.](https://github.com/callstack/repack/blob/main/packages/repack/ios/ScriptManager.mm#L269-L270)
+> `ApplicationContext` 객체는 네이티브 모듈을 노출할 때 사용하는 [`getModule` 메서드에 파라미터로 넘어옵니다.](https://github.com/callstack/repack/blob/main/packages/repack/android/src/main/java/com/callstack/repack/ScriptManagerPackage.kt#L10)
 >
 > 자세한 설명은 생략하겠습니다.
 >
 > 아무튼 브라우저와 달리 스크립트를 로드하려면 좀 복잡한 방법이 필요합니다.
 
-`Federated.importModule`의 `ScriptManager.shared.loadScript`에서 위의 동작을 수행합니다.
+이러한 동작을 `Federated.importModule`의 `ScriptManager.shared.loadScript`에서 수행합니다.
 
 ```
 export async function importModule<Exports = any>(
@@ -113,7 +113,7 @@ export async function importModule<Exports = any>(
 
 일반적으로 브라우저 환경에서 [다른 앱의 `remoteEntry.js` 주소는 `Module Federation` 플러그인 설정에서 정적으로 정의](https://webpack.js.org/concepts/module-federation/#promise-based-dynamic-remotes)하고, 각 앱의 번들링 파일에 다른 앱의 **`remoteEntry.js`의 주소가 하드코딩되어 컴파일**됩니다.
 
-하지만 `Federated.importModule`은 [`ScriptManager.shared.loadScript`](https://github.com/callstack/repack/blob/main/packages/repack/src/modules/ScriptManager/ScriptManager.ts#L336)에서 **`Resolver`를 통해 스크립트의 위치를 동적으로 결정할 수 있는 기회를 제공**합니다.
+하지만 `Federated.importModule`은 [`ScriptManager.shared.loadScript`](https://github.com/callstack/repack/blob/4d525876382a6ce88618ff294b0cb957306b483e/packages/repack/src/modules/ScriptManager/ScriptManager.ts#L334)에서 **`Resolver`를 통해 스크립트의 위치를 동적으로 결정할 수 있는 기회를 제공**합니다.
 
 ```
 async loadScript(
@@ -154,7 +154,7 @@ ScriptManager.shared.addResolver(async (scriptId, caller) => {
 
 리액트 네이티브의 기본 번들러로 앱을 빌드하면, 모든 자바스크립트 파일을 `index.bundle`이라는 한 개의 파일로 번들링해서 `apk`, `ipa` 파일에 `asset`으로 포함시킵니다.
 
-`index.bundle`에서 실행되는 앱을 `Host`라고 합니다.
+`index.{js,bundle}`에서 실행되는 앱을 `Host`라고 합니다.
 
 이러한 구조는 `repack` 번들러로 앱을 빌드해도 동일합니다.
 
@@ -178,7 +178,7 @@ ScriptManager.shared.addResolver(async (scriptId, caller) => {
 
 즉, **네이티브 라이브러리는 `Host`에 포함되어 초기화되고, [다른 앱을 초기화할 때 공유](https://velog.io/@joondong2/Module-Federation-%EB%B6%84%EC%84%9D#import-summary)되어야** 합니다.
 
-`react`는 네이티브 라이브러리는 아니지만, 리액트 네이티브 앱을 시작하기 위해선 `react-native`의 `AppRegistry.registerComponent` 메서드로 즉시 앱 컴포넌트를 등록해야 하는데, 동기적으로 앱 컴포넌트를 만들기 위해 `eager:true`로 설정해야 합니다.
+`react`는 네이티브 라이브러리는 아니지만, 리액트 네이티브 앱을 시작하기 위해선 `react-native`의 `AppRegistry.registerComponent` 메서드로 즉시 앱 컴포넌트를 등록해야 하는데, 동기적으로 앱 컴포넌트를 만들기 위해 즉시 로드(`eager`)해야 합니다.
 
 #### 제약
 
@@ -204,7 +204,7 @@ ScriptManager.shared.addResolver(async (scriptId, caller) => {
 
 공식 문서에서는 [`react`와 `react-native`의 `eager`를 `true`로 설정해야 한다](https://re-pack.dev/docs/module-federation#react-and-react-native-must-be-eager-and-singleton)고 명시되어 있습니다.
 
-하지만 `Module Fedeation`으로 빌드된 코드를 분석했을 땐, `Host`애서만 `true`로 설정하면 되고, 나머지 앱은 `false`로 설정해도 무방해 보였습니다.
+하지만 `Module Fedeation`으로 빌드된 코드를 분석했을 땐, `Host`에서만 `true`로 설정하면 되고, 나머지 앱은 `false`로 설정하고, `Host`로 부터 공유받아 사용해도 무방해 보였습니다.
 
 [이것 때문에 `repack issue`에 질문](https://github.com/callstack/repack/issues/462)을 올렸는데, `repack` 개발자도 기존 라이브러리를 네이티브에서 작동하도록 설정 정도만 바꾼 것에 불과하기 때문인지, **명확한 답변을 하지 못했습니다.**
 

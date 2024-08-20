@@ -172,8 +172,6 @@ compiler.hooks.thisCompilation.tap(PLUGIN_NAME, (compilation) => {
 
 이를 방지하기 위해 global의 `webpackChunk${앱이름}` 배열도 지워야 합니다.
 
-ㅤ
-
 이 두 객체를 지우는 코드를 [`ReactNativeDynamicModuleFederationModule`](../modules/react-native-dynamic-module-federation/src/webpack/ReactNativeDynamicModuleFederationModule.js) webpack 모듈의 `codeGeneration` 메서드에서 생성합니다.
 
 ## [DynamicImportProvider](https://github.com/JoonDong2/dynamic-federations/blob/main/modules/react-native-dynamic-module-federation/src/DynamicImportProvider.tsx)

@@ -45,6 +45,8 @@ export const sayHello = () => {
 
 ### app1/index.js
 
+`app2`가 노출한 `sayHello` 모듈을 가져와 해당 모듈의 sayHello 함수를 호출합니다.
+
 ```
 import { trim } from "lodash-es"; // 공유 모듈
 
@@ -57,7 +59,7 @@ import("app2/sayHello").then(({ sayHello }) => {
 
 ## 실행 흐름
 
-어떤 모듈을 노출하는 앱은 `Module Federation` 플러그인에 의해 `remoteEntry.js`와 이외 모듈을 로드할 수 있는 파일로 번들링됩니다.
+어떤 모듈을 노출하는 앱은 `Module Federation` 플러그인에 의해 `remoteEntry.js`와 모듈 파일로 번들링됩니다.
 
 > 예를 들어, 예제 코드에서 `app2`는 `remoteEntry.js` 파일과 `sayHello.js`의 번들링 파일인 `src_sayHello_js.js` 파일로 번들링됩니다.
 
@@ -78,11 +80,9 @@ import("app2/sayHello").then(({ sayHello }) => {
 
 그리고 어떤 앱에 대한 모든 요청은 해당 앱의 엔트리 객체의 `get` 메서드를 통해 이루어집니다.
 
-`init` 메서드는 엔트리 객체의 내부 데이터를 초기화하기 위해 사용됩니다.
+`init` 메서드는 엔트리 객체의 내부 데이터를 초기화하기 위해 사용되고, 엔트리 모듈을 `global`에 노출할 때 한 번만 호출됩니다.
 
-> 엔트리 모듈을 `global`에 노출할 때 한 번 호출됩니다.
-
-`init` 메서드에 `caller`가 공유할 라이브러리도 함께 입력됩니다.
+`init` 메서드가 호출될 때 `caller`가 공유하는 라이브러리도 함께 입력됩니다.
 
 어떤 사이트에 접속해서 `Module Federation`으로 번들링된 `app1`의 `index.js`를 다운받아 로드했다고 가정해 보겠습니다.
 
@@ -119,7 +119,7 @@ import("app2/sayHello").then(({ sayHello }) => {
 엔트리 앱의 `get` 메서드는 `__webpack_module_cache__`에서 모듈 객체를 찾아 반환하는데, 없다면 다음 동작을 수행합니다.
 
 1. 원하는 모듈이 포함된 파일을 로드
-2. 파일에 포함된 모듈의 `Resolver`를 **webpack_moduels**에 `push`
+2. 파일에 포함된 모듈의 `Resolver`를 `__webpack_modules__`에 `push`
 3. `Resolver`로 모듈 객체를 만들어 `__webpack_module_cache__`에 입력하고 반환
 
 여기서 2번은 [`react-native-dynamic-module-federation`](./react-native-dynamic-module-federation.md) 에서 기존 앱을 삭제하는 방법을 설명할 때 언급되기에, 이 부분만 좀 더 자세히 살펴보겠습니다.
