@@ -13,23 +13,18 @@ export function useDynamicModule<T = any>(
   containerName: string,
   moduleName: string,
   options?: {
-    suspense?: boolean;
     error?: {
-      throw?: boolean;
       onError?: (e: Error) => void;
     };
     timeout?: number;
     onTimeout?: () => void;
   }
 ): { module?: T; isPending: boolean; isError: boolean } {
-  const suspense = options?.suspense || false;
-
   const containers = useContainers();
 
   const manager = useDynamicImportManager();
 
   const status = useRef<Status>('pending');
-  const [promiseOrError, setPromiseOrError] = useState<any>();
   const [module, setModule] = useState<T>();
 
   useEffect(() => {
@@ -49,7 +44,7 @@ export function useDynamicModule<T = any>(
       }
 
       status.current = 'pending';
-      const race = Promise.race(promises)
+      Promise.race(promises)
         .then((newModule) => {
           status.current = 'success';
           setModule(newModule);
@@ -63,25 +58,10 @@ export function useDynamicModule<T = any>(
           );
           options?.error?.onError?.(dynamicModuleError);
           manager[ErrorManagerSymbol]?.onError?.(dynamicModuleError);
-          setPromiseOrError(e);
         });
-      setPromiseOrError(race);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [containers?.[containerName], moduleName]);
-
-  if (suspense && status.current === 'pending' && promiseOrError && !module) {
-    throw promiseOrError;
-  }
-
-  if (
-    options?.error?.throw &&
-    status.current === 'error' &&
-    promiseOrError &&
-    !module
-  ) {
-    throw promiseOrError;
-  }
 
   return {
     module,
