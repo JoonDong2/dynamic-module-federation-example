@@ -27,7 +27,7 @@ PACKAGE_JSON="$ROOT/package.json"
 
 NAME=$(grep '"name"' "$PACKAGE_JSON" | awk -F '"' '{print $4}')
 
-RESPONSE=$(curl -s "localhost:4000/container/$NAME?native_version=$NATIVE_VERSION&os=android&env=staging")
+RESPONSE=$(curl --noproxy localhost "localhost:4000/container/$NAME?native_version=$NATIVE_VERSION&os=android&env=staging")
 LAST_VERSION=$(echo $RESPONSE | grep -o "\"$NAME\":[^,}]*" | cut -d':' -f2 | sed 's/"//g' | tr -d '[:space:]')
 
 echo "현재 최신 버전: $LAST_VERSION"
@@ -85,7 +85,7 @@ cd "$SOURCE_DIR"
 zip -r "$ZIP_FILE" ./
 
 # POST 요청으로 압축 파일 전송
-curl -X POST "$DEPLOY_URL" -F "archive=@./$ZIP_FILE" -F "name=${NAME}" -F "os=android" -F "version=${VERSION}" -F "native_version=${NATIVE_VERSION}" -F "env=staging"
+curl --noproxy localhost -X POST "$DEPLOY_URL" -F "archive=@./$ZIP_FILE" -F "name=${NAME}" -F "os=android" -F "version=${VERSION}" -F "native_version=${NATIVE_VERSION}" -F "env=staging"
 
 # 임시로 생성한 압축 파일 삭제 (선택 사항)
 rm -rf "./$ZIP_FILE"

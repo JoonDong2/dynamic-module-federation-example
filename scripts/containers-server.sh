@@ -26,7 +26,7 @@ if ! [ "$RESULT" -eq 0 ]; then
   open_containers_server
 else
   # containers-server인지 확인
-  RESPONSE=$(curl -s "localhost:4000/status?key=$KEY")
+  RESPONSE=$(curl --noproxy localhost "localhost:4000/status?key=$KEY")
   RECEIVED_KEY=$(echo $RESPONSE | grep -o '"key":[^,}]*' | cut -d':' -f2 | sed 's/"//g' | tr -d '[:space:]')
   # 아니면 4000번 포트 가져올 것인지 물어보기
   if ! [ $RECEIVED_KEY == $KEY ]; then
